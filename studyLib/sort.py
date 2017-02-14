@@ -1,3 +1,4 @@
+# coding=utf--8
 # 排序算法练习
 
 def bubble_sort(list, flag=True):
@@ -25,5 +26,5 @@ if __name__ == '__main__':
     print(list)
     print(bubble_sort(list, False))
 
-    list1= [i for i in range(1000)]
+    list1 = [i for i in range(1000)]
     print(bubble_sort(list1, False))
