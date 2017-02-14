@@ -12,3 +12,8 @@ def bubble_sort(list):
                 if (list[j] > list[j + 1]):
                     list[j], list[j + 1] = list[j + 1], list[j]
     return(list)
+
+if __name__ == '__main__':
+    list = [8,7,6,3,2,1]
+    print(bubble_sort(list))
+    print(list)
