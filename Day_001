@@ -1,1 +1,42 @@
 
+# coding=utf--8
+from time import clock
+import codecs
+import sys, gc
+
+name = input("hello,what's your name?:")
+age = int(input("hello,How old are you?"))
+eval('11')
+person = [{"name": name, "age": age}]
+
+print(person)
+for i in range(0, 5):
+    for dict1 in person:
+        t0 = clock()
+        for key in dict1:
+            print("key=", key, ",value=", dict1[key])
+        t1 = clock()
+        for key, value in dict1.items():
+            print("key=", key, ",value=", value)
+        t2 = clock()
+        # for key, value in enumerate(dict1):
+        #    print("key=", key, ",value=", value)
+        # t3 = clock()
+
+        print(t1 - t0, t2 - t1)
+
+a = [1, 2, 3, 4, 5]
+for i, v in enumerate(a):
+    print(i, v)
+
+file_in = ("C:\\Users\\zhuosha\\Documents\\Diameter消息检查.txt")
+file_out = ('C:\\Users\\zhuosha\\PycharmProjects\\python_study\\untitled\\1.txt')
+f_write = open(file_out, mode='w')
+f_open = open(file_in, mode='r', encoding="utf8")  # 含有非ASCII的文件指定编码方式，如中文不指定编码按GBK编码，输出的时候默认python的utf-8会报错
+for line in f_open:
+    print(line.encode().decode(), end="", file=f_write)
+f_open.close()
+
+sys.stdout.write("hello\n")
+
+print(gc.get_objects())
