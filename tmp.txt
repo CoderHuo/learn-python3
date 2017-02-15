@@ -1,0 +1,57 @@
+class Solution
+{
+    static void Main(string[] args)
+    {
+        int n = int.Parse(Console.ReadLine()); // the number of temperatures to analyse
+        string temps = Console.ReadLine(); // the n temperatures expressed as integers ranging from -273 to 5526
+        int temp_min_negativa=-273;
+        int temp_min_positiva=5526;
+        int resultado=0;
+        string[] temps_substrings = temps.Split(' ');
+        
+        if(n ==0){
+            resultado=0;
+        } else 
+        {
+            for (int i=0; i<n; i++)
+            {
+                int numVal = int.Parse(temps_substrings[i]);//convertir de string a int
+                if(numVal >-273 && numVal < 5526)
+                {
+                    if(numVal<0 && numVal>temp_min_negativa)
+                    {
+                        temp_min_negativa = numVal;
+                    }
+                    else if(numVal>0 && numVal<temp_min_positiva) 
+                    {
+                        temp_min_positiva = numVal;
+                    }
+                } else if (n == 1)
+                {
+                    resultado =numVal;
+                }
+            
+            
+                if(n !=1)
+                {
+                    if(temp_min_positiva != 5526)
+                    {
+                    int absoluto = Math.Abs(temp_min_negativa);
+                        if(absoluto <= temp_min_positiva)
+                        {
+                        resultado = absoluto;
+                        }else
+                        {
+                            resultado = temp_min_positiva;
+                        }
+                    } else
+                    {
+                        resultado=temp_min_negativa;
+                    }
+                }
+            }
+        
+        }
+        Console.WriteLine(resultado);
+    }
+}
