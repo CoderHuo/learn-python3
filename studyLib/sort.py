@@ -41,8 +41,7 @@ def insert_sort(list, flag=True):
                     j -= 1
     return list
 
-
-if __name__ == '__main__':
+def main():
     print(help(bubble_sort))
     list = [8, 7, 6, 3, 2, 1]
     print(bubble_sort(list))
@@ -54,3 +53,6 @@ if __name__ == '__main__':
     list2 = [1, 0, 2, -1, -2, -3, 87]
     print(insert_sort(list2))
     print(insert_sort(list2, False))
+
+if __name__ == '__main__':
+    main()
