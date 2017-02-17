@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# coding: utf-8
+# -*- coding: utf-8 -*-
 
 def Hanoi_Move(n, a='a', b='b', c='c'):
     if (n == 1):
