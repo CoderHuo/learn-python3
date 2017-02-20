@@ -3,12 +3,10 @@
 __author__ = 'Mr.Huo'
 
 
-
-
-
 def main():
+    #list是一种可变的有序表，可以随时添加和删除其中的元素
+    # 使用[],list()创建一个空列表
     empty_list = []
-    # 使用list()创建一个空列表
     another_empty_list = list()
 
     my_list = ['huo', 'shao', 'hua']
@@ -16,6 +14,7 @@ def main():
     empty_list = list('cat')
 
     a_tuple = ("liu", "zhi", 'xuan')
+    #从一个元组创建list
     another_empty_list = list(a_tuple)
 
     print(empty_list)
@@ -28,25 +27,19 @@ def main():
     cells = [(row, col) for row in rows for col in cols]
     print(cells)
 
-    # 字典推导式
-    words = "letters"
-    word_count = {letter: words.count(letter) for letter in words}
-    print(word_count)
-    for name, contents in word_count.items():
-        print(name, contents)
-        print(list(word_count.items()))
-        print(list(word_count.keys()))
-        print(list(word_count.values()))
-
-        # while True:
-        #     value = input("Integer,please [q to quit]:")
-        #     if value == 'q':
-        #         break
-        #     number = int(value)
-        #     if number % 2 == 0:
-        #         print(number, "squared is", number * number)
-        #         continue
-
+    #l.append(x)末尾增加x
+    my_list.append('30')
+    print(my_list)
+    # l.insert(i,x)
+    my_list.insert(3,'40')
+    print(my_list)
+    # l.pop([i])
+    my_list.pop()
+    print(my_list)
+    my_list.pop(3)
+    print(my_list)
+    #切片操作tuple[x:y:z]
+    print(my_list[-1::-1])
 
 if __name__ == '__main__':
     main()
