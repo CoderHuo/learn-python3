@@ -27,30 +27,30 @@ def _odd_iter():
     n = 1
     while True:
         n += 2
-        print('_odd_iter',n)
+        # print('_odd_iter',n)
         yield n
 
 
 def _not_divisible(n):
-    print('not_di',n)
+    # print('not_di',n)
     return lambda x: x % n > 0
 
 
 def primes(max=10):
-    '''素数生成器，生成小于max的素数'''
+    '''素数生成器，生成不大于max的素数'''
     n = 2
-    if n<=max:
+    if n <= max:
         yield n
-    it = _odd_iter()  # 初始序列
-    print('it',it)
+    it = _odd_iter()  # 初始序列，3开始的基数序列
+    # print('it',it)
     while True:
         n = it.__next__()  # 返回序列的第一个值
-        print('HHHH',n)
-        if n<=max:
+        # print('HHHH',n)
+        if n <= max:
             yield n
         else:
             break
-        it = filter(_not_divisible(n), it) #重新获取序列，不包含能被第一个整数的。
+        it = filter(_not_divisible(n), it)  # 重新获取序列生成器，不包含能被第一个整数的。
 
 
 def main():
@@ -62,9 +62,10 @@ def main():
 
     # 回数
     output = filter(is_palindrome, range(1, 500))
-    print("回数：",list(output))
+    print("回数：", list(output))
 
-    print("素数：",list(primes(100)))
+    print("素数：", list(primes(100)))
+
 
 if __name__ == '__main__':
     main()
