@@ -40,12 +40,12 @@ def now3():
 
 
 def main():
+    # 装饰器
+    now1()
+    time.sleep(1)
     # 无装饰器
     d_now2 = log(now2)
     d_now2()
-    time.sleep(1)
-    # 装饰器
-    now1()
     time.sleep(1)
     now3()
 
