@@ -26,20 +26,21 @@ def insert_sort(list, flag=True):
         时间复杂度:O(n^2) O(n),空间复杂度：O(1)"""
     if len(list) > 0:
         for i in range(1, len(list)):
-            key = list[i] #要插入的值
+            key = list[i]  # 要插入的值
             j = i - 1
             while j >= 0:
                 if flag:
-                    if list[j] > key:   #列表y到0之间的值跟要插入的值比较，如果大于就换位
-                        list[j + 1] ,list[j]= list[j],key
-                    #print("i=", i, " j=", j, "KEY=",key,"list=", list)
+                    if list[j] > key:  # 列表y到0之间的值跟要插入的值比较，如果大于就换位
+                        list[j + 1], list[j] = list[j], key
+                    # print("i=", i, " j=", j, "KEY=",key,"list=", list)
                     j -= 1
                 else:
                     if list[j] < key:
                         list[j + 1], list[j] = list[j], key
-                    #print("i=", i, " j=", j, "KEY=",key,"list=", list)
+                    # print("i=", i, " j=", j, "KEY=",key,"list=", list)
                     j -= 1
     return list
+
 
 def main():
     print(help(bubble_sort))
@@ -53,6 +54,7 @@ def main():
     list2 = [1, 0, 2, -1, -2, -3, 87]
     print(insert_sort(list2))
     print(insert_sort(list2, False))
+
 
 if __name__ == '__main__':
     main()

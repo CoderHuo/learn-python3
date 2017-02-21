@@ -13,12 +13,14 @@ def add(x):
 def add_two(x, y):
     return x + y
 
-def statistics(dic,k):
+
+def statistics(dic, k):
     if not k in dic:
         dic[k] = 1
     else:
-        dic[k]+=1
+        dic[k] += 1
     return dic
+
 
 def main():
     # python map()函数,接收两个参数函数、Iterable，map将传入的函数依次作用到序列的每个元素，并把结果作为新的Iterator返回
@@ -38,12 +40,12 @@ def main():
     help(reduce)
     redu1 = reduce(add_two, list1)
     print(redu1)
-    redu2 = reduce(statistics, list1,{})
+    redu2 = reduce(statistics, list1, {})
     print(redu2)
-    redu3 = reduce(statistics, list1,redu2)
+    redu3 = reduce(statistics, list1, redu2)
     print(redu3)
-    list2=['H','S','H']
-    redu4 = reduce(statistics, list2,{})
+    list2 = ['H', 'S', 'H']
+    redu4 = reduce(statistics, list2, {})
     print(redu4)
 
 
