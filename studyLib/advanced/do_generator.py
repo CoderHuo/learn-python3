@@ -28,7 +28,7 @@ def main():
     print(gen.__next__())
     try:
         print(gen.__next__())
-    except Exception as err:
+    except StopIteration as err:
         print(err)
 
     print(list(odd()))
