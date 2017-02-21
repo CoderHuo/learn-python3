@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # 排序算法练习
 
-def bubble_sort(list, flag=True):
+def bubble_sort(list, reverse=True):
     """ 冒泡排序基本思想：从第一个元素开始，每每相邻的两个元素进行比较，若前者比后者大则交换位置。最后两个相邻元素，
         比较完成后最大的元素形成，然后再次从头开始进行比较，若元素个数为n+1个，则总共需要进行n轮比较就可完成排序
         （n轮比较后，n个最大的元素已经形成，最后一个元素当然是最小的，就不用再比了）。每轮比较中，每形成一个最大
@@ -12,7 +12,7 @@ def bubble_sort(list, flag=True):
     if (len(list) > 0):
         for i in range(len(list) - 1):
             for j in range(len(list) - 1 - i):
-                if (flag):
+                if (reverse):
                     if (list[j] > list[j + 1]):
                         list[j], list[j + 1] = list[j + 1], list[j]
                 else:
@@ -21,7 +21,7 @@ def bubble_sort(list, flag=True):
     return (list)
 
 
-def insert_sort(list, flag=True):
+def insert_sort(list, reverse=True):
     """ 插入排序基本思想：第一个元素已经排好，从第二个开始，依次跟前面的比较，按大小规则进行排序
         时间复杂度:O(n^2) O(n),空间复杂度：O(1)"""
     if len(list) > 0:
@@ -29,7 +29,7 @@ def insert_sort(list, flag=True):
             key = list[i]  # 要插入的值
             j = i - 1
             while j >= 0:
-                if flag:
+                if reverse:
                     if list[j] > key:  # 列表y到0之间的值跟要插入的值比较，如果大于就换位
                         list[j + 1], list[j] = list[j], key
                     # print("i=", i, " j=", j, "KEY=",key,"list=", list)
