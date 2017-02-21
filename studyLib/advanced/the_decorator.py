@@ -7,8 +7,11 @@ __author__ = 'Mr.Huo'
 
 def log(func):
     def wrapper(*args, **kwargs):
+        #wrapper.__name__ = func.__name__
         print('call %s()' % func.__name__)
-        return func(*args, **kwargs)
+        result = func(*args, **kwargs)
+        print('end  %s()' % (func.__name__))
+        return result
 
     return wrapper
 
@@ -30,6 +33,7 @@ def log_text(text):
             wrapper.__name__ = func.__name__
             print('%s %s()' % (text, func.__name__))
             return func(*args, **kwargs)
+            print('end  %s()' % (func.__name__))
 
         return wrapper
 
