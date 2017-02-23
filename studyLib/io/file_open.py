@@ -17,7 +17,8 @@ def main():
     except Exception as err:
         print(err)
     finally:
-        file_op.close()
+        if file_op:
+            file_op.close()
 
     # 还有一种方式 with ...  as,自动调用close()方法
     # read() 读取全部内容，读小文件可以，读取大文件使用read(size)
