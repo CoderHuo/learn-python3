@@ -28,10 +28,9 @@ def main():
     print(testdir)
     try:
         os.mkdir(testdir)
+        os.rmdir(testdir)
     except FileExistsError :
         os.rmdir(testdir)
-    #rmv dir
-    os.rmdir(testdir)
 
 if __name__ == '__main__':
     main()
