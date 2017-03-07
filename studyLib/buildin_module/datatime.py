@@ -49,14 +49,15 @@ def main():
     # 字符串转时间fromtimestamp()
     cday = datetime.strptime('1986-06-06 12:00:00', '%Y-%m-%d %H:%M:%S')
     print(cday)
+
     # 时间转字符串
     time_str = now.strftime('%a, %b %d %H:%M')
     print(time_str)
     tz_utc_8 = timezone(timedelta(hours=8))
     now = now.replace(tzinfo=tz_utc_8)
     print(now)
-    # 时区转换
 
+    # 时区转换
     utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
     print(utc_dt)
     bj_dt = utc_dt.astimezone(tz_utc(8))
