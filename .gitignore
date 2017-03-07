@@ -1,2 +1,5 @@
 .idea
-
+.settings
+.project
+.pydevproject
+*__pycache__*
