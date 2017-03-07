@@ -12,6 +12,7 @@ def tz_utc(hours):
 
 
 def to_timestamp(dt_str, tz_str):
+    '''按照给定时间、时区转换成timestamp'''
     utc_reg = re.match(r'^UTC([\+\-])(\d{1,2}):(\d{2}$)', tz_str)
     if utc_reg:
         try:
