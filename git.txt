@@ -18,6 +18,7 @@
     git status                       #查看仓库当前的状态
     git diff                         #查看文件变化
     git log                          #查看修改历史记录，如果嫌输出信息太多，看得眼花缭乱的，可以试试加上--pretty=oneline参数
+    git log --graph --pretty=oneline --abbrev-commit
     git reset --hard HEAD~           #回退到HEAD~版本，上一个版本就是HEAD~
     git reset HEAD file              #可以把暂存区的修改撤销掉（unstage），重新放回工作区
     git merge --no-ff -m "XX" dev    #
