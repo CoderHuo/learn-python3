@@ -32,6 +32,10 @@ def main():
     print(p1.x, p1.y, type(p1))
     print(isinstance(p1, Point))
     print(isinstance(p1, tuple))
+    Student = namedtuple('Student','name classNum sex')
+    std1 = Student("霍少华",0,'F')
+    print(std1)
+    print(std1._asdict())
 
     # deque，list存储数据，按索引访问元素很快，但是插入和删除很慢，list是线性存储
     # deque 高效的实现插入和删除的双向链表，适用于队列
