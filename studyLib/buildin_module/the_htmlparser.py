@@ -10,15 +10,24 @@ __author__ = 'Mr.Huo'
 class MyHtmlParser(HTMLParser):
     def __init__(self):
         super(MyHtmlParser, self).__init__()
-        self.li_flag   = False
-        self.h2_flag   = False
-        self.h3_flag   = False
-        self.p_flag    = False
-        self.time_flag = False
-        self.span_flag = False
-        self.div_flag  = False
-        self.ul_flag   = False
-        self.events    = {}
+        self.levels = 0
+        self.events = {}
+        self.event = []
+        self.keys = []
+        self.key_count_1 = 0
+        self.key_count_2 = 0
+        self.key_count_3 = 0
+        self.tag = ('div', 'h2', 'h3', 'ul', 'li', 'time', 'span')
+        self.tagclass = ('most-recent-events', 'shrubbery',
+                         'widget-title', 'list-recent-events menu',
+                         'event-title', 'say-no-more',
+                         'event-location', 'widget-title just-missed'
+                         )
+        self.flag = {'div_1': False, 'div_2': False, 'h2': False, 'h3_1': False, 'h3_2': False,
+                     'ul': False, 'li': False, 'time': False, 'span_1': False, 'span_2': False}
+
+    def __str__(self):
+        return str(self.events)
 
     # Overridable -- finish processing of start+end tag: <tag.../>
     def handle_startendtag(self, tag, attrs):
@@ -27,41 +36,78 @@ class MyHtmlParser(HTMLParser):
 
     # Overridable -- handle start tag: <tag>
     def handle_starttag(self, tag, attrs):
-        if tag == 'div' and attrs:
-            for key,value in attrs:
-                if key == 'class' and value == 'most-recent-events':
-                    self.div_flag = True
-        elif tag == 'h2' and attrs:
-            for key,value in attrs:
-                if key == 'class' and value == 'widget-title':
-                    self.h2_flag = True
-        elif tag == 'ul' and attrs:
-            for key,value in attrs:
-                if key == 'class' and value == 'list-recent-events menu':
-                    self.ul_flag = True
-        elif tag == 'li' :
-            self.li_flag = True
-
-        pass
+        if tag in self.tag:
+            if attrs:
+                for key, value in attrs:
+                    if key == 'class':
+                        if value == self.tagclass[0]:
+                            self.flag['div_1'] = True
+                            self.levels += 1
+                        elif value == self.tagclass[1]:
+                            self.flag['div_2'] = True
+                            self.levels += 1
+                        elif value == self.tagclass[2]:
+                            self.flag['h2'] = True
+                            self.levels += 1
+                        elif value == self.tagclass[3]:
+                            self.flag['ul'] = True
+                            self.levels += 1
+                        elif value == self.tagclass[4]:
+                            self.flag['h3_1'] = True
+                            self.levels += 1
+                        elif value == self.tagclass[5]:
+                            self.flag['span_1'] = True
+                            self.levels += 1
+                        elif value == self.tagclass[6]:
+                            self.flag['span_2'] = True
+                            self.levels += 1
+                        elif value == self.tagclass[7]:
+                            self.flag['h3_2'] = True
+                            self.levels += 1
+                    elif key == 'datetime':
+                        self.flag['time'] = True
+                        self.levels += 1
+            else:
+                if tag == self.tag[4]:
+                    self.flag['li'] = True
+                    self.levels += 1
 
     # Overridable -- handle end tag: <tag.../>
     def handle_endtag(self, tag):
-        if tag == 'div':
-            self.div_flag  = False
-        elif tag  == 'h2':
-            self.h2_flag   = False
-        elif tag  == 'h3':
-            self.h3_flag   = False
-        elif tag  == 'li':
-            self.li_flag   = False
-        elif tag  == 'time':
-            self.time_flag = False
-        elif tag  == 'p':
-            self.p_flag    = False
-        elif tag  == 'h3':
-            self.h3_flag   = False
-        elif tag  == 'ul':
-            self.ul_flag   = False
+        if tag == self.tag[0]:
+            if self.flag['div_2']:
+                self.flag['div_2'] = False
+                self.levels -= 1
+            elif self.flag['div_2'] == False and self.flag['div_1']:
+                self.flag['div_1'] = False
+                self.levels -= 1
+        elif tag == self.tag[1]:
+            self.flag['h2'] = False
+            self.levels -= 1
+        elif tag == self.tag[2]:
+            if self.flag['h3_1']:
+                self.flag['h3_1'] = False
+                self.levels -= 1
+            elif self.flag['h3_1'] == False and self.flag['h3_2']:
+                self.flag['h3_2'] = False
+                self.levels -= 1
+        elif tag == self.tag[3]:
+            self.flag['ul'] = False
+            self.levels -= 1
+        elif tag == self.tag[4]:
+            self.flag['li'] = False
+            self.levels -= 1
+            print('------------')
+        elif tag == self.tag[5]:
+            self.flag['time'] = False
+            self.levels -= 1
+        elif tag == self.tag[6]:
+            if self.flag['span_1']:
+                self.flag['span_1'] = False
+                self.levels -= 1
+            elif self.flag['span_2']:
+                self.flag['span_2'] = False
+                self.levels -= 1
 
     # Overridable -- handle character reference  &#
     def handle_charref(self, name):
@@ -73,13 +119,42 @@ class MyHtmlParser(HTMLParser):
 
     # Overridable -- handle data
     def handle_data(self, data):
-        if self.li:
-            print('data=%s' % data)
-        pass
-
+        if self.flag['div_1']:
+            if self.flag['div_2']:
+                if self.flag['h2']:
+                    self.keys.append(data)
+                    dt = {self.keys[self.key_count_1]: []}
+                    self.key_count_1 += 1
+                    self.events.update(dt)
+                    print(self.keys, self.key_count_1)
+                elif self.flag['li']:
+                    if self.flag['h3_1']:
+                        key1 = self.keys[self.key_count_1 - 1]
+                        key2 = len(self.events[key1])
+                        print('h3_1',key2)
+                        if key2 ==0:
+                            self.events[key1].append([data])
+                        else:
+                            #key2 = len(self.events[key1][key2-1])
+                            self.events[key1][key2-1].append(data)
+                    if self.flag['time'] and self.flag['span_1'] == False:
+                        key1 = self.keys[self.key_count_1 - 1]
+                        key2 = len(self.events[key1])
+                        print('time',key2)
+                        if key2 ==0:
+                            self.events[key1].append([data])
+                        else:
+                            self.events[key1][key2-1].append(data)
+                    if self.flag['span_2']:
+                        key1 = self.keys[self.key_count_1 - 1]
+                        key2 = len(self.events[key1])
+                        print('span_2',key2)
+                        if key2 ==0:
+                            self.events[key1].append([data])
+                        else:
+                            self.events[key1][key2-1].append(data)
     # Overridable -- handle comment
     def handle_comment(self, data):
-        print('comment=%s' % data)
         pass
 
     # Overridable -- handle declaration
@@ -107,16 +182,16 @@ htmldata = '''<html>
                 <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events</h2>
                 <p class="give-me-more"><a href="?page=2" title="More Events">More</a></p>
                 <ul class="list-recent-events menu">
-                    <li>
-                        <h3 class="event-title"><a href="/events/python-events/498/">Rencontres Django 2017</a></h3>
-                        <p>
-                            <time datetime="2017-04-01T00:00:00+00:00">01 April &ndash; 03 April <span class="say-no-more"> 2017</span></time>
-                            <span class="event-location">Toulon, France</span>
-                        </p>
-                    </li>
-                    <li>
-                        <h3 class="event-title"><a href="/events/python-events/467/">DjangoCon Europe 2017</a></h3>
-                        <p>
+                1   <li>
+                3       <p>
+                4           <time datetime="2017-04-01T00:00:00+00:00">01 April &ndash; 03 April <span class="say-no-more"> 2017</span></time>
+                5           <span class="event-location">Toulon, France</span>
+                6       </p>
+                2       <h3 class="event-title"><a href="/events/python-events/498/">Rencontres Django 2017</a></h3>
+                7   </li>
+                8   <li>
+                9       <h3 class="event-title"><a href="/events/python-events/467/">DjangoCon Europe 2017</a></h3>
+                0       <p>
                             <time datetime="2017-04-03T00:00:00+00:00">03 April &ndash; 08 April <span class="say-no-more"> 2017</span></time>
                             <span class="event-location">Florence, Italy</span>
                         </p>
@@ -142,6 +217,26 @@ htmldata = '''<html>
                             <span class="event-location">FH Technikum Wien, Höchstädtplatz 6, 1200 Vienna, Austria</span>
                         </p>
                     </li>
+                    <li>
+                        <h3 class="event-title"><a href="/events/python-events/463/">GeoPython 2017</a></h3>
+                        <p>
+                            <time datetime="2017-05-08T00:00:00+00:00">08 May &ndash; 11 May <span class="say-no-more"> 2017</span></time>
+                            <span class="event-location">Basel, Switzerland</span>
+                        </p>
+                    </li>
+                </ul>
+                <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events1</h2>
+                <ul class="list-recent-events menu">
+                    <li>
+                        <h3 class="event-title"><a href="/events/python-events/463/">GeoPython 2017</a></h3>
+                        <p>
+                            <time datetime="2017-05-08T00:00:00+00:00">08 May &ndash; 11 May <span class="say-no-more"> 2017</span></time>
+                            <span class="event-location">Basel, Switzerland</span>
+                        </p>
+                    </li>
+                </ul>
+                <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events2</h2>
+                <ul class="list-recent-events menu">
                     <li>
                         <h3 class="event-title"><a href="/events/python-events/463/">GeoPython 2017</a></h3>
                         <p>
@@ -194,6 +289,8 @@ htmldata = '''<html>
 def main():
     myparser = MyHtmlParser()
     myparser.feed(htmldata)
+    print(myparser)
+    print(myparser.levels)
     myparser.close()
     pass
 
