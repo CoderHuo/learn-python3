@@ -6,3 +6,21 @@ Fri, 17 Mar 2017 17:37:13 the_htmlparser.py[line:307] |WARNING   | Html open err
 Fri, 17 Mar 2017 17:39:46 the_htmlparser.py[line:307]    WARNING Html open err,return code is:200
 Fri, 17 Mar 2017 17:40:04 the_htmlparser.py[line:307] WARNING   | Html open err,return code is:200
 Fri, 17 Mar 2017 17:40:13 the_htmlparser.py[line:307] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:48:56 the_htmlparser.py[line:306] |INFO      | Do openurl
+Fri, 17 Mar 2017 17:48:57 the_htmlparser.py[line:309] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:49:52 the_htmlparser.py[line:306-1] |INFO      | Do openurl
+Fri, 17 Mar 2017 17:49:52 the_htmlparser.py[line:309-1] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:50:10 the_htmlparser.py[line:306] |INFO      | Do openurl
+Fri, 17 Mar 2017 17:50:11 the_htmlparser.py[line:309] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:51:08 the_htmlparser.py[line:306] |INFO      | Do openurl
+Fri, 17 Mar 2017 17:51:09 the_htmlparser.py[line:309] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:51:46 the_htmlparser.py[line:306] |INFO      | Do openurl
+Fri, 17 Mar 2017 17:51:47 the_htmlparser.py[line:309] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:52:09 the_htmlparser.py[line:306] |INFO      | Do openurl
+Fri, 17 Mar 2017 17:52:09 the_htmlparser.py[line:309] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:52:22 the_htmlparser.py[line:306] |INFO      | Do openurl
+Fri, 17 Mar 2017 17:52:23 the_htmlparser.py[line:309] |WARNING   | Html open err,return code is:200
+Fri, 17 Mar 2017 17:52:44 the_htmlparser.py[line:306] |      INFO| Do openurl
+Fri, 17 Mar 2017 17:52:45 the_htmlparser.py[line:309] |   WARNING| Html open err,return code is:200
+Fri, 17 Mar 2017 17:52:57 the_htmlparser.py[line:306]       root: |      INFO| Do openurl
+Fri, 17 Mar 2017 17:52:58 the_htmlparser.py[line:309]       root: |   WARNING| Html open err,return code is:200

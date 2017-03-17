@@ -9,14 +9,15 @@ import logging
 
 __author__ = 'Mr.Huo'
 
+#日志输出到指定文件
 logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(filename)s[line:%(lineno)d] |%(levelname)-10s| %(message)s',
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(name)10s: |%(levelname)10s| %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='mylog.log')
-
+#日志输出到标准输出
 console =  logging.StreamHandler()
 console.setLevel(logging.INFO)
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(name)10s: %(levelname)8s: %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 
@@ -302,6 +303,7 @@ class MyOpenurl(object):
         self.url = request.Request(url,headers=self.headers)
 
     def openurl(self):
+        logging.info('Do openurl')
         with request.urlopen(self.url) as url_rsp:
             if url_rsp.status == 200:
                 logging.warning('Html open err,return code is:'+str(url_rsp.status))
@@ -311,12 +313,12 @@ class MyOpenurl(object):
                 logging.warning('Html open err,return code is:'+str(url_rsp.status))
 
 def main():
-    print('============================已字符串方式获取网页数据============================')
+    print('============================以字符串方式获取网页数据============================')
     myparser = MyHtmlParser()
     myparser.feed(htmldata)
     pprint(myparser.allEvents)
     myparser.close()
-    print('============================已urllib方式获取网页数据============================')
+    print('============================以urllib方式获取网页数据============================')
     url = "https://www.python.org/events/python-events/"
     hmtl = MyOpenurl(url)
     myparser1 = MyHtmlParser()
