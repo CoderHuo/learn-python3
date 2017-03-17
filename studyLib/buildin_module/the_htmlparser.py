@@ -4,9 +4,23 @@
 from html.parser import HTMLParser
 from collections import OrderedDict
 from pprint import pprint
-from urllib import request, parse
+from urllib import request
+import logging
 
 __author__ = 'Mr.Huo'
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] |%(levelname)-10s| %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename='mylog.log')
+
+console =  logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
+
+
 
 
 class MyHtmlParser(HTMLParser):
@@ -289,8 +303,12 @@ class MyOpenurl(object):
 
     def openurl(self):
         with request.urlopen(self.url) as url_rsp:
-            html = url_rsp.read().decode('utf-8', 'ignore')
-            return html
+            if url_rsp.status == 200:
+                logging.warning('Html open err,return code is:'+str(url_rsp.status))
+                html = url_rsp.read().decode('utf-8', 'ignore')
+                return html
+            else:
+                logging.warning('Html open err,return code is:'+str(url_rsp.status))
 
 def main():
     print('============================已字符串方式获取网页数据============================')
