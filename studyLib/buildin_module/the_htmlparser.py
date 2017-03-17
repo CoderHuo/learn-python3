@@ -4,6 +4,7 @@
 from html.parser import HTMLParser
 from collections import OrderedDict
 from pprint import pprint
+from urllib import request, parse
 
 __author__ = 'Mr.Huo'
 
@@ -14,6 +15,7 @@ class MyHtmlParser(HTMLParser):
         self.levels = 0
         self.allEvents = {}
         self.events = []
+        #self.event = {'event-title':'','event-time':'','event-location':''}
         self.event = OrderedDict()
         self.event['event-title'] = ''
         self.event['event-time'] = ''
@@ -54,30 +56,31 @@ class MyHtmlParser(HTMLParser):
                         if value == self.tagclass[0]:
                             self.flag['div_1'] = True
                         #shrubbery
-                        elif value == self.tagclass[1]:
-                            self.flag['div_2'] = True
-                        #widget-title
-                        elif value == self.tagclass[2]:
-                            self.flag['h2'] = True
-                        #list-recent-events menu
-                        elif value == self.tagclass[3]:
-                            self.flag['ul'] = True
-                        #event-title
-                        elif value == self.tagclass[4]:
-                            self.flag['h3_1'] = True
-                        #say-no-more
-                        elif value == self.tagclass[5]:
-                            self.flag['span_1'] = True
-                        #event-location
-                        elif value == self.tagclass[6]:
-                            self.flag['span_2'] = True
-                        #widget-title just-missed
-                        elif value == self.tagclass[7]:
-                            self.flag['h3_2'] = True
-                    elif key == 'datetime':
+                        if self.flag['div_1'] :
+                            if value == self.tagclass[1]:
+                                self.flag['div_2'] = True
+                            #widget-title
+                            elif value == self.tagclass[2]:
+                                self.flag['h2'] = True
+                            #list-recent-events menu
+                            elif value == self.tagclass[3]:
+                                self.flag['ul'] = True
+                            #event-title
+                            elif value == self.tagclass[4]:
+                                self.flag['h3_1'] = True
+                            #say-no-more
+                            elif value == self.tagclass[5]:
+                                self.flag['span_1'] = True
+                            #event-location
+                            elif value == self.tagclass[6]:
+                                self.flag['span_2'] = True
+                            #widget-title just-missed
+                            elif value == self.tagclass[7]:
+                                self.flag['h3_2'] = True
+                    elif self.flag['div_1'] and key == 'datetime':
                         self.flag['time'] = True
             else:
-                if tag == self.tag[4]:
+                if self.flag['div_1'] and tag == self.tag[4]:
                     self.flag['li'] = True
 
     # Overridable -- handle end tag: <tag.../>
@@ -97,6 +100,7 @@ class MyHtmlParser(HTMLParser):
                 self.flag['h3_2'] = False
         elif tag == self.tag[3]:
             self.flag['ul'] = False
+            #判断在需要的分区部分了才增加
             if self.flag['div_1']:
                 key = self.keys[len(self.keys) - 1]
                 dt = {key: self.events}
@@ -104,12 +108,13 @@ class MyHtmlParser(HTMLParser):
                 self.allEvents.update(dt)
         elif tag == self.tag[4]:
             self.flag['li'] = False
-            self.events.append(self.event)
-            self.event = OrderedDict()
-            self.event['event-title'] = ''
-            self.event['event-time'] = ''
-            self.event['event-location'] = ''
-            #self.event = {'event-title':'','event-time':'','event-location':''}
+            if self.flag['div_1'] :
+                self.events.append(self.event)
+                self.event = OrderedDict()
+                self.event['event-title'] = ''
+                self.event['event-time'] = ''
+                self.event['event-location'] = ''
+                #self.event = {'event-title':'','event-time':'','event-location':''}
         elif tag == self.tag[5]:
             self.flag['time'] = False
         elif tag == self.tag[6]:
@@ -271,14 +276,35 @@ htmldata = '''<html>
 </body>
 </html>
 '''
+class MyOpenurl(object):
+    def __init__(self,url):
+        self.headers = {'Connection': 'Keep-Alive',
+           'Accept': 'application/x-ms-application, image/jpeg, application/xaml+xml, image/gif, image/pjpeg, ' \
+                     + 'application/x-ms-xbap, */*',
+           'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3',
+           'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; ' \
+                         +'.NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; ' \
+                         +'.NET4.0C; .NET4.0E)'}
+        self.url = request.Request(url,headers=self.headers)
 
+    def openurl(self):
+        with request.urlopen(self.url) as url_rsp:
+            html = url_rsp.read().decode('utf-8', 'ignore')
+            return html
 
 def main():
+    print('============================已字符串方式获取网页数据============================')
     myparser = MyHtmlParser()
     myparser.feed(htmldata)
     pprint(myparser.allEvents)
     myparser.close()
-    pass
+    print('============================已urllib方式获取网页数据============================')
+    url = "https://www.python.org/events/python-events/"
+    hmtl = MyOpenurl(url)
+    myparser1 = MyHtmlParser()
+    myparser1.feed(hmtl.openurl())
+    pprint(myparser1.allEvents)
+    myparser1.close()
 
 
 if __name__ == '__main__':
