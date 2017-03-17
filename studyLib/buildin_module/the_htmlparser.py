@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from html.parser import HTMLParser
-from html.entities import name2codepoint
+from collections import OrderedDict
+from pprint import pprint
 
 __author__ = 'Mr.Huo'
 
@@ -11,12 +12,13 @@ class MyHtmlParser(HTMLParser):
     def __init__(self):
         super(MyHtmlParser, self).__init__()
         self.levels = 0
-        self.events = {}
-        self.event = []
+        self.allEvents = {}
+        self.events = []
+        self.event = OrderedDict()
+        self.event['event-title'] = ''
+        self.event['event-time'] = ''
+        self.event['event-location'] = ''
         self.keys = []
-        self.key_count_1 = 0
-        self.key_count_2 = 0
-        self.key_count_3 = 0
         self.tag = ('div', 'h2', 'h3', 'ul', 'li', 'time', 'span')
         self.tagclass = ('most-recent-events', 'shrubbery',
                          'widget-title', 'list-recent-events menu',
@@ -27,7 +29,15 @@ class MyHtmlParser(HTMLParser):
                      'ul': False, 'li': False, 'time': False, 'span_1': False, 'span_2': False}
 
     def __str__(self):
-        return str(self.events)
+        return str(self.allEvents)
+
+    def add_event_data(self, data):
+        if self.flag['h3_1']:
+            self.event['event-title'] = data
+        if self.flag['time'] and self.flag['span_1'] == False:
+            self.event['event-time'] = data
+        if self.flag['span_2']:
+            self.event['event-location'] = data
 
     # Overridable -- finish processing of start+end tag: <tag.../>
     def handle_startendtag(self, tag, attrs):
@@ -40,74 +50,87 @@ class MyHtmlParser(HTMLParser):
             if attrs:
                 for key, value in attrs:
                     if key == 'class':
+                        #most-recent-events
                         if value == self.tagclass[0]:
                             self.flag['div_1'] = True
-                            self.levels += 1
+                        #shrubbery
                         elif value == self.tagclass[1]:
                             self.flag['div_2'] = True
-                            self.levels += 1
+                        #widget-title
                         elif value == self.tagclass[2]:
                             self.flag['h2'] = True
-                            self.levels += 1
+                        #list-recent-events menu
                         elif value == self.tagclass[3]:
                             self.flag['ul'] = True
-                            self.levels += 1
+                        #event-title
                         elif value == self.tagclass[4]:
                             self.flag['h3_1'] = True
-                            self.levels += 1
+                        #say-no-more
                         elif value == self.tagclass[5]:
                             self.flag['span_1'] = True
-                            self.levels += 1
+                        #event-location
                         elif value == self.tagclass[6]:
                             self.flag['span_2'] = True
-                            self.levels += 1
+                        #widget-title just-missed
                         elif value == self.tagclass[7]:
                             self.flag['h3_2'] = True
-                            self.levels += 1
                     elif key == 'datetime':
                         self.flag['time'] = True
-                        self.levels += 1
             else:
                 if tag == self.tag[4]:
                     self.flag['li'] = True
-                    self.levels += 1
 
     # Overridable -- handle end tag: <tag.../>
     def handle_endtag(self, tag):
+        #'div', 'h2', 'h3', 'ul', 'li', 'time', 'span'
         if tag == self.tag[0]:
             if self.flag['div_2']:
                 self.flag['div_2'] = False
-                self.levels -= 1
             elif self.flag['div_2'] == False and self.flag['div_1']:
                 self.flag['div_1'] = False
-                self.levels -= 1
         elif tag == self.tag[1]:
             self.flag['h2'] = False
-            self.levels -= 1
         elif tag == self.tag[2]:
             if self.flag['h3_1']:
                 self.flag['h3_1'] = False
-                self.levels -= 1
             elif self.flag['h3_1'] == False and self.flag['h3_2']:
                 self.flag['h3_2'] = False
-                self.levels -= 1
         elif tag == self.tag[3]:
             self.flag['ul'] = False
-            self.levels -= 1
+            if self.flag['div_1']:
+                key = self.keys[len(self.keys) - 1]
+                dt = {key: self.events}
+                self.events = []
+                self.allEvents.update(dt)
         elif tag == self.tag[4]:
             self.flag['li'] = False
-            self.levels -= 1
-            print('------------')
+            self.events.append(self.event)
+            self.event = OrderedDict()
+            self.event['event-title'] = ''
+            self.event['event-time'] = ''
+            self.event['event-location'] = ''
+            #self.event = {'event-title':'','event-time':'','event-location':''}
         elif tag == self.tag[5]:
             self.flag['time'] = False
-            self.levels -= 1
         elif tag == self.tag[6]:
             if self.flag['span_1']:
                 self.flag['span_1'] = False
-                self.levels -= 1
             elif self.flag['span_2']:
                 self.flag['span_2'] = False
-                self.levels -= 1
+
+    # Overridable -- handle data
+    def handle_data(self, data):
+        if self.flag['div_1']:
+            if self.flag['div_2']:
+                if self.flag['h2']:
+                    self.keys.append(data)
+                elif self.flag['ul'] and self.flag['li']:
+                    self.add_event_data(data)
+            else:
+                if self.flag['h3_2']:
+                    self.keys.append(data)
+                elif self.flag['ul'] and self.flag['li']:
+                    self.add_event_data(data)
 
     # Overridable -- handle character reference  &#
     def handle_charref(self, name):
@@ -117,42 +140,6 @@ class MyHtmlParser(HTMLParser):
     def handle_entityref(self, name):
         pass
 
-    # Overridable -- handle data
-    def handle_data(self, data):
-        if self.flag['div_1']:
-            if self.flag['div_2']:
-                if self.flag['h2']:
-                    self.keys.append(data)
-                    dt = {self.keys[self.key_count_1]: []}
-                    self.key_count_1 += 1
-                    self.events.update(dt)
-                    print(self.keys, self.key_count_1)
-                elif self.flag['li']:
-                    if self.flag['h3_1']:
-                        key1 = self.keys[self.key_count_1 - 1]
-                        key2 = len(self.events[key1])
-                        print('h3_1',key2)
-                        if key2 ==0:
-                            self.events[key1].append([data])
-                        else:
-                            #key2 = len(self.events[key1][key2-1])
-                            self.events[key1][key2-1].append(data)
-                    if self.flag['time'] and self.flag['span_1'] == False:
-                        key1 = self.keys[self.key_count_1 - 1]
-                        key2 = len(self.events[key1])
-                        print('time',key2)
-                        if key2 ==0:
-                            self.events[key1].append([data])
-                        else:
-                            self.events[key1][key2-1].append(data)
-                    if self.flag['span_2']:
-                        key1 = self.keys[self.key_count_1 - 1]
-                        key2 = len(self.events[key1])
-                        print('span_2',key2)
-                        if key2 ==0:
-                            self.events[key1].append([data])
-                        else:
-                            self.events[key1][key2-1].append(data)
     # Overridable -- handle comment
     def handle_comment(self, data):
         pass
@@ -289,8 +276,7 @@ htmldata = '''<html>
 def main():
     myparser = MyHtmlParser()
     myparser.feed(htmldata)
-    print(myparser)
-    print(myparser.levels)
+    pprint(myparser.allEvents)
     myparser.close()
     pass
 
