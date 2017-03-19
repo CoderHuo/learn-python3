@@ -8,8 +8,8 @@ import sys
 import pygame
 from settings import Settings
 from ship import Ship
-import game_functions
-
+import game_functions as gf
+import time
 
 def run_game():
     # 初始化游戏并创建一个屏幕对象
@@ -18,20 +18,16 @@ def run_game():
 
     screen = pygame.display.set_mode((ai_setting.screen_width, ai_setting.screen_height))
     pygame.display.set_caption("Alien Invision")
-
-    #创建一个ship
-    ship = Ship(screen)
+    # 创建一个ship
+    ship = Ship(screen,ai_setting)
     # 开始游戏的主循环
     while True:
+        time.sleep(ai_setting.ai_time)
         # 监视键盘和鼠标事件
-        game_functions.check_events()
+        gf.check_events(ship)
 
-        screen.fill(ai_setting.bg_color)
-        ship.blitme()
-        #ship.move_left()
-        ship.move_right()
-        # 让最近绘制的屏幕可见
-        pygame.display.flip()
+        gf.update_screen(ai_setting, screen, ship)
+
 
 def main():
     run_game()
