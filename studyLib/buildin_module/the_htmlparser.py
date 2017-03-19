@@ -9,19 +9,17 @@ import logging
 
 __author__ = 'Mr.Huo'
 
-#日志输出到指定文件
+# 日志输出到指定文件
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(name)10s: |%(levelname)10s| %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='mylog.log')
-#日志输出到标准输出
-console =  logging.StreamHandler()
+# 日志输出到标准输出
+console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s %(filename)s[line:%(lineno)d] %(name)10s: %(levelname)8s: %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
-
-
 
 
 class MyHtmlParser(HTMLParser):
@@ -30,7 +28,7 @@ class MyHtmlParser(HTMLParser):
         self.levels = 0
         self.allEvents = {}
         self.events = []
-        #self.event = {'event-title':'','event-time':'','event-location':''}
+        # self.event = {'event-title':'','event-time':'','event-location':''}
         self.event = OrderedDict()
         self.event['event-title'] = ''
         self.event['event-time'] = ''
@@ -51,7 +49,7 @@ class MyHtmlParser(HTMLParser):
     def add_event_data(self, data):
         if self.flag['h3_1']:
             self.event['event-title'] = data
-        if self.flag['time'] and self.flag['span_1'] == False:
+        if self.flag['time'] and not self.flag['span_1']:
             self.event['event-time'] = data
         if self.flag['span_2']:
             self.event['event-location'] = data
@@ -67,29 +65,29 @@ class MyHtmlParser(HTMLParser):
             if attrs:
                 for key, value in attrs:
                     if key == 'class':
-                        #most-recent-events
+                        # most-recent-events
                         if value == self.tagclass[0]:
                             self.flag['div_1'] = True
-                        #shrubbery
-                        if self.flag['div_1'] :
+                        # shrubbery
+                        if self.flag['div_1']:
                             if value == self.tagclass[1]:
                                 self.flag['div_2'] = True
-                            #widget-title
+                            # widget-title
                             elif value == self.tagclass[2]:
                                 self.flag['h2'] = True
-                            #list-recent-events menu
+                            # list-recent-events menu
                             elif value == self.tagclass[3]:
                                 self.flag['ul'] = True
-                            #event-title
+                            # event-title
                             elif value == self.tagclass[4]:
                                 self.flag['h3_1'] = True
-                            #say-no-more
+                            # say-no-more
                             elif value == self.tagclass[5]:
                                 self.flag['span_1'] = True
-                            #event-location
+                            # event-location
                             elif value == self.tagclass[6]:
                                 self.flag['span_2'] = True
-                            #widget-title just-missed
+                            # widget-title just-missed
                             elif value == self.tagclass[7]:
                                 self.flag['h3_2'] = True
                     elif self.flag['div_1'] and key == 'datetime':
@@ -100,22 +98,22 @@ class MyHtmlParser(HTMLParser):
 
     # Overridable -- handle end tag: <tag.../>
     def handle_endtag(self, tag):
-        #'div', 'h2', 'h3', 'ul', 'li', 'time', 'span'
+        # 'div', 'h2', 'h3', 'ul', 'li', 'time', 'span'
         if tag == self.tag[0]:
             if self.flag['div_2']:
                 self.flag['div_2'] = False
-            elif self.flag['div_2'] == False and self.flag['div_1']:
+            elif not self.flag['div_2'] and self.flag['div_1']:
                 self.flag['div_1'] = False
         elif tag == self.tag[1]:
             self.flag['h2'] = False
         elif tag == self.tag[2]:
             if self.flag['h3_1']:
                 self.flag['h3_1'] = False
-            elif self.flag['h3_1'] == False and self.flag['h3_2']:
+            elif not self.flag['h3_1'] and self.flag['h3_2']:
                 self.flag['h3_2'] = False
         elif tag == self.tag[3]:
             self.flag['ul'] = False
-            #判断在需要的分区部分了才增加
+            # 判断在需要的分区部分了才增加
             if self.flag['div_1']:
                 key = self.keys[len(self.keys) - 1]
                 dt = {key: self.events}
@@ -123,13 +121,13 @@ class MyHtmlParser(HTMLParser):
                 self.allEvents.update(dt)
         elif tag == self.tag[4]:
             self.flag['li'] = False
-            if self.flag['div_1'] :
+            if self.flag['div_1']:
                 self.events.append(self.event)
                 self.event = OrderedDict()
                 self.event['event-title'] = ''
                 self.event['event-time'] = ''
                 self.event['event-location'] = ''
-                #self.event = {'event-title':'','event-time':'','event-location':''}
+                # self.event = {'event-title':'','event-time':'','event-location':''}
         elif tag == self.tag[5]:
             self.flag['time'] = False
         elif tag == self.tag[6]:
@@ -191,7 +189,7 @@ htmldata = '''<html>
                 <ul class="list-recent-events menu">
                 1   <li>
                 3       <p>
-                4           <time datetime="2017-04-01T00:00:00+00:00">01 April &ndash; 03 April <span class="say-no-more"> 2017</span></time>
+                4           <time datetime="2017-04-01T00:00:00+00:00">01 April &ndash; 03 April \<span class="say-no-more"> 2017</span></time>
                 5           <span class="event-location">Toulon, France</span>
                 6       </p>
                 2       <h3 class="event-title"><a href="/events/python-events/498/">Rencontres Django 2017</a></h3>
@@ -291,26 +289,29 @@ htmldata = '''<html>
 </body>
 </html>
 '''
+
+
 class MyOpenurl(object):
-    def __init__(self,url):
+    def __init__(self, url):
         self.headers = {'Connection': 'Keep-Alive',
-           'Accept': 'application/x-ms-application, image/jpeg, application/xaml+xml, image/gif, image/pjpeg, ' \
-                     + 'application/x-ms-xbap, */*',
-           'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3',
-           'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; ' \
-                         +'.NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; ' \
-                         +'.NET4.0C; .NET4.0E)'}
-        self.url = request.Request(url,headers=self.headers)
+                        'Accept': 'application/x-ms-application, image/jpeg, application/xaml+xml, image/gif, image/pjpeg, ' \
+                                  + 'application/x-ms-xbap, */*',
+                        'Accept-Language': 'en-US,en;q=0.8,zh-Hans-CN;q=0.5,zh-Hans;q=0.3',
+                        'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; ' \
+                                      + '.NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; ' \
+                                      + '.NET4.0C; .NET4.0E)'}
+        self.url = request.Request(url, headers=self.headers)
 
     def openurl(self):
         logging.info('Do openurl')
         with request.urlopen(self.url) as url_rsp:
             if url_rsp.status == 200:
-                logging.warning('Html open err,return code is:'+str(url_rsp.status))
+                logging.warning('Html open err,return code is:' + str(url_rsp.status))
                 html = url_rsp.read().decode('utf-8', 'ignore')
                 return html
             else:
-                logging.warning('Html open err,return code is:'+str(url_rsp.status))
+                logging.warning('Html open err,return code is:' + str(url_rsp.status))
+
 
 def main():
     print('============================以字符串方式获取网页数据============================')
