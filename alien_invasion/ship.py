@@ -61,7 +61,6 @@ class Ship():
             self.move_up()
         if self.m_DOWN:
             self.move_down()
-        print('pos:',self.rect.bottom,self.rect.centerx,self.screen_rect.bottom,self.screen_rect.centerx)
 
 
 def main():
