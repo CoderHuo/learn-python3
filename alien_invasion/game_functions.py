@@ -53,10 +53,16 @@ def check_events(screen, ai_settings, ship, bullets):
             check_keyup_event(event.key, ship)
 
 
-def get_number_aliens_x(ai_settings, alien_width):
+def get_number_aliens_cols(ai_settings, alien_width):
     available_space_x = ai_settings.screen_width - 2 * alien_width
     number_aliens_x = int(available_space_x / (2 * alien_width))
     return number_aliens_x
+
+
+def get_number_aliens_raws(ai_settings, alien_height):
+    available_space_y = ai_settings.screen_height - 2 * alien_height
+    number_aliens_y = int(available_space_y / (2 * alien_height))
+    return number_aliens_y
 
 
 def create_aliens(screen, ai_settings, aliens, alien_number):
@@ -69,7 +75,7 @@ def create_aliens(screen, ai_settings, aliens, alien_number):
 def create_fleet(screen, ai_settings, aliens):
     alien = Alien(screen, ai_settings)
     alien_width = alien.rect.width
-    alien_numbers = get_number_aliens_x(ai_settings, alien_width)
+    alien_numbers = get_number_aliens_col(ai_settings, alien_width)
     for alien_number in range(alien_numbers):
         create_aliens(screen, ai_settings, aliens, alien_number)
 
