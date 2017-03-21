@@ -62,10 +62,3 @@ class Ship():
         if self.m_DOWN:
             self.move_down()
 
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()

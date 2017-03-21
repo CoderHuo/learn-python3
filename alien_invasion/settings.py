@@ -21,6 +21,10 @@ class Settings():
         # 子弹数量
         self.bullets_allowed = 5
 
+        #外星人
+        self.alien_speed_factorX = 1
+        self.alien_speed_factorY = 2
+
     def __str__(self):
         return 'This is the alien invasion settings'
 

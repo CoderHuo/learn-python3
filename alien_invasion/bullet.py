@@ -7,7 +7,7 @@ from pygame.sprite import Sprite
 
 
 class Bullet(Sprite):
-    def __init__(self, ai_settings, screen, ship):
+    def __init__(self, screen, ai_settings, ship):
         super(Bullet, self).__init__()
         self.screen = screen
         # 在0，0 创建一个子弹，在移动到正确位置
