@@ -64,3 +64,6 @@ class Ship():
         if self.m_DOWN:
             self.move_down()
 
+    def center_ship(self):
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.bottom = self.screen_rect.bottom

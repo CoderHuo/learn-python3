@@ -13,13 +13,14 @@ class Settings():
         # 飞船属性
         self.ship_speed = 3.5
         self.ai_time = 0.01
+        self.ship_limit = 3
         # 子弹属性bullet
         self.bullet_speed = 2
-        self.bullet_width = 3
+        self.bullet_width = 300
         self.bullet_height = 15
-        self.bullet_color = (60, 60, 60)
+        self.bullet_color = (100, 60, 60)
         # 子弹数量
-        self.bullets_allowed = 5
+        self.bullets_allowed = 10
 
         #外星人
         self.alien_speed = 1

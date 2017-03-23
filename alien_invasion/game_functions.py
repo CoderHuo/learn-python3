@@ -68,31 +68,54 @@ def create_aliens(screen, ai_settings, aliens, col_number, raw_number):
 
 
 def create_fleet(screen, ai_settings, aliens):
+    """创建外星人舰队"""
     alien = Alien(screen, ai_settings)
     alien_width = alien.rect.width
     alien_height = alien.rect.height
     alien_cols = get_number_aliens_cols(ai_settings, alien_width)
     alien_rows = get_number_aliens_rows(ai_settings, alien_height)
+
     for row_number in range(alien_rows):
         for col_number in range(alien_cols):
             create_aliens(screen, ai_settings, aliens, col_number, row_number)
 
-def check_fleet_edges(ai_settings,aliens):
+
+def check_fleet_edges(ai_settings, aliens):
+    """检查舰队是不是到达边缘"""
     for alien in aliens:
         if alien.check_edges():
-            change_fleet_direction(ai_settings,aliens)
+            change_fleet_direction(ai_settings, aliens)
             break
 
-def change_fleet_direction(ai_settings,aliens):
+
+def change_fleet_direction(ai_settings, aliens):
     '''将整群外星人下移，并改变他们的方向'''
     for alien in aliens.sprites():
         alien.rect.y += ai_settings.alien_drop_speed
     for alien in aliens:
         alien.direction *= -1
 
-def update_alien(ai_settings,aliens):
-    check_fleet_edges(ai_settings,aliens)
+
+def update_alien(screen, ai_settings, status, ship, bullets, aliens):
+    """更新外星人"""
+    check_fleet_edges(ai_settings, aliens)
     aliens.update()
+    # 检查是外星人是否相撞
+    if pygame.sprite.spritecollideany(ship, aliens):
+        print('Ship hit!!!')
+        hit(screen, ai_settings, status, ship, bullets, aliens)
+
+
+def hit(screen, ai_settings, status, ship, bullets, aliens):
+    if status.ships_left > 0:
+        status.ships_left -= 1
+        bullets.empty()
+        aliens.empty()
+        create_fleet(screen, ai_settings, aliens)
+        ship.center_ship()
+        time.sleep(0.5)
+    else:
+        status.game_active = False
 
 
 def fire_bullet(screen, ai_settings, ship, bullets):
@@ -102,7 +125,7 @@ def fire_bullet(screen, ai_settings, ship, bullets):
         bullets.add(new_bullet)
 
 
-def update_bullets(bullets):
+def update_bullets(screen, ai_settings, bullets, aliens):
     """更新子弹的位置，并删除已消失的子弹"""
     # 更新子弹的位置
     bullets.update()
@@ -110,16 +133,25 @@ def update_bullets(bullets):
     for bullet in bullets:
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+    check_bullet_alien_collisions(screen, ai_settings, bullets, aliens)
 
 
-def update_screen(screen, ai_settings, ship, bullets, aliens):
+def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens):
+    '''检查是否有子弹击中外星人，如果是这样就删除对应的子弹和外星人'''
+    pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if len(aliens) == 0:
+        bullets.empty()
+        create_fleet(screen, ai_settings, aliens)
+
+
+def update_screen(screen, ai_settings, status, ship, bullets, aliens):
     """更新屏幕上的图像，并切换到新屏幕"""
     # 更新飞船
     ship.update()
     # 更新子弹
-    update_bullets(bullets)
+    update_bullets(screen, ai_settings, bullets, aliens)
     # 创建外星人并更新
-    update_alien(ai_settings,aliens)
+    update_alien(screen, ai_settings, status, ship, bullets, aliens)
     # 填充背景色
     screen.fill(ai_settings.bg_color)
     # 绘制飞船、子弹、外星人
