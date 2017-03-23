@@ -31,7 +31,7 @@ def run_game():
         # 监视键盘和鼠标事件
         gf.check_events(screen, ai_settings, ship, bullets)
         gf.update_screen(screen, ai_settings, ship, bullets, aliens)
-        #clock.tick(160)
+        clock.tick(160)
 
     pygame.quit()
 

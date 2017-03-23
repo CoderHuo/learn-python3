@@ -35,13 +35,6 @@ def check_keyup_event(event, ship):
         ship.m_DOWN = False
 
 
-def fire_bullet(screen, ai_settings, ship, bullets):
-    """如果还没有到达限制，就发射一颗子弹"""
-    if len(bullets) < ai_settings.bullets_allowed:
-        new_bullet = Bullet(screen, ai_settings, ship)
-        bullets.add(new_bullet)
-
-
 def check_events(screen, ai_settings, ship, bullets):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
@@ -59,29 +52,54 @@ def get_number_aliens_cols(ai_settings, alien_width):
     return number_aliens_x
 
 
-def get_number_aliens_raws(ai_settings, alien_height):
-    available_space_y = ai_settings.screen_height - 2 * alien_height
-    number_aliens_y = int(available_space_y / (2 * alien_height))
+def get_number_aliens_rows(ai_settings, alien_height):
+    available_space_y = ai_settings.screen_height / 3 * 2
+    number_aliens_y = int(available_space_y / (alien_height * 2))
     return number_aliens_y
 
 
-def create_aliens(screen, ai_settings, aliens, alien_number):
+def create_aliens(screen, ai_settings, aliens, col_number, raw_number):
     alien = Alien(screen, ai_settings)
-    alien.x = alien.rect.width + 2 * alien.rect.width * alien_number
+    alien.x = alien.rect.width + 2 * alien.rect.width * col_number
+    alien.y = alien.rect.height * 2 * raw_number
     alien.rect.x = alien.x
+    alien.rect.y = alien.y
     aliens.add(alien)
 
 
 def create_fleet(screen, ai_settings, aliens):
     alien = Alien(screen, ai_settings)
     alien_width = alien.rect.width
-    alien_numbers = get_number_aliens_col(ai_settings, alien_width)
-    for alien_number in range(alien_numbers):
-        create_aliens(screen, ai_settings, aliens, alien_number)
+    alien_height = alien.rect.height
+    alien_cols = get_number_aliens_cols(ai_settings, alien_width)
+    alien_rows = get_number_aliens_rows(ai_settings, alien_height)
+    for row_number in range(alien_rows):
+        for col_number in range(alien_cols):
+            create_aliens(screen, ai_settings, aliens, col_number, row_number)
 
+def check_fleet_edges(ai_settings,aliens):
+    for alien in aliens:
+        if alien.check_edges():
+            change_fleet_direction(ai_settings,aliens)
+            break
 
-def update_alien(aliens):
+def change_fleet_direction(ai_settings,aliens):
+    '''将整群外星人下移，并改变他们的方向'''
+    for alien in aliens.sprites():
+        alien.rect.y += ai_settings.alien_drop_speed
+    for alien in aliens:
+        alien.direction *= -1
+
+def update_alien(ai_settings,aliens):
+    check_fleet_edges(ai_settings,aliens)
     aliens.update()
+
+
+def fire_bullet(screen, ai_settings, ship, bullets):
+    """如果还没有到达限制，就发射一颗子弹"""
+    if len(bullets) < ai_settings.bullets_allowed:
+        new_bullet = Bullet(screen, ai_settings, ship)
+        bullets.add(new_bullet)
 
 
 def update_bullets(bullets):
@@ -101,7 +119,7 @@ def update_screen(screen, ai_settings, ship, bullets, aliens):
     # 更新子弹
     update_bullets(bullets)
     # 创建外星人并更新
-    # update_alien(aliens)
+    update_alien(ai_settings,aliens)
     # 填充背景色
     screen.fill(ai_settings.bg_color)
     # 绘制飞船、子弹、外星人

@@ -7,14 +7,14 @@ __author__ = 'Mr.Huo'
 class Settings():
     def __init__(self):
         # 主窗口设置
-        self.screen_width = 800
+        self.screen_width = 1200
         self.screen_height = 600
         self.bg_color = (230, 230, 230)
         # 飞船属性
-        self.ship_speed_factor = 3.5
+        self.ship_speed = 3.5
         self.ai_time = 0.01
         # 子弹属性bullet
-        self.bullet_speed_factor = 2
+        self.bullet_speed = 2
         self.bullet_width = 3
         self.bullet_height = 15
         self.bullet_color = (60, 60, 60)
@@ -22,8 +22,9 @@ class Settings():
         self.bullets_allowed = 5
 
         #外星人
-        self.alien_speed_factorX = 1
-        self.alien_speed_factorY = 2
+        self.alien_speed = 1
+        self.alien_direction = 1
+        self.alien_drop_speed =10
 
     def __str__(self):
         return 'This is the alien invasion settings'

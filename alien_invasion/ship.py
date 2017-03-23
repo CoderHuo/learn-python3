@@ -9,7 +9,6 @@ class Ship():
     def __init__(self, screen,ai_settings):
         """初始化飞船并设置其初始位置"""
         self.screen = screen
-        self.ai_settings =ai_settings
 
         # 加载飞船图像并获取其外接矩形
         self.imag = pygame.image.load('images/ship.bmp')
@@ -23,6 +22,9 @@ class Ship():
         self.center = float(self.rect.centerx)
         self.bottom = float(self.rect.bottom)
 
+        #飞船速度
+        self.speed = ai_settings.ship_speed
+
         # 移动标志
         self.m_LEFT = False
         self.m_RIGHT = False
@@ -35,22 +37,22 @@ class Ship():
 
     def move_left(self):
         if self.rect.left > self.screen_rect.left:
-            self.center -= self.ai_settings.ship_speed_factor
+            self.center -= self.speed
             self.rect.centerx =self.center
 
     def move_right(self):
         if self.rect.right < self.screen_rect.right:
-            self.center += self.ai_settings.ship_speed_factor
+            self.center += self.speed
             self.rect.centerx =self.center
 
     def move_up(self):
         if self.rect.top > self.screen_rect.top:
-            self.bottom -= self.ai_settings.ship_speed_factor
+            self.bottom -= self.speed
             self.rect.bottom = self.bottom
 
     def move_down(self):
         if self.rect.bottom < self.screen_rect.bottom:
-            self.bottom += self.ai_settings.ship_speed_factor
+            self.bottom += self.speed
             self.rect.bottom = self.bottom
     def update(self):
         if self.m_RIGHT:
