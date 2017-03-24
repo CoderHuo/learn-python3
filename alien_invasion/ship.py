@@ -67,3 +67,7 @@ class Ship():
     def center_ship(self):
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.bottom
+        #fix a bug--- 飞船跟外星人相撞后，不仅要重置飞船RECT的值
+        # 还要重置保存飞船位置的值，因为下次移动是以此值为准
+        self.center = float(self.rect.centerx)
+        self.bottom = float(self.rect.bottom)
