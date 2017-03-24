@@ -33,7 +33,6 @@ def run_game():
         if status.game_active:
             gf.check_events(screen, ai_settings, ship, bullets)
             gf.update_screen(screen, ai_settings,status, ship, bullets, aliens)
-            #print(ship.speed,ship.rect.x,ship.rect.y)
             clock.tick(160)
         else:
             break

@@ -101,14 +101,28 @@ def update_alien(screen, ai_settings, status, ship, bullets, aliens):
     check_fleet_edges(ai_settings, aliens)
     aliens.update()
     # 检查是外星人是否相撞
-    attacker = None
-    attacker = pygame.sprite.spritecollideany(ship, aliens)
-    if attacker != None :
+    hit_alien = None
+    hit_alien = pygame.sprite.spritecollideany(ship, aliens)
+    if hit_alien != None:
         print('Ship hit!!!')
-        hit(screen, ai_settings, status, ship, bullets, aliens)
+        # 删除被撞外星人
+        aliens.remove(hit_alien)
+        # 重置飞船
+        ship_hit(screen, ai_settings, status, ship, bullets, aliens)
+    # 检查外星人是否到达底部
+    check_aliens_bottom(screen, ai_settings, status, ship, bullets, aliens)
 
 
-def hit(screen, ai_settings, status, ship, bullets, aliens):
+def check_aliens_bottom(screen, ai_settings, status, ship, bullets, aliens):
+    """检查外星人是不是到达底部，如果是重置游戏"""
+    screen_rect = screen.get_rect()
+    for alien in aliens:
+        if alien.rect.bottom >= screen_rect.bottom:
+            ship_hit(screen, ai_settings, status, ship, bullets, aliens)
+            break
+
+
+def ship_hit(screen, ai_settings, status, ship, bullets, aliens):
     if status.ships_left > 0:
         status.ships_left -= 1
         bullets.empty()
