@@ -6,7 +6,8 @@ __author__ = 'Mr.Huo'
 class GameStatus():
     def __init__(self, ai_settings):
         self.ai_settings = ai_settings
-        self.game_active = True
+        #让游戏开始处于暂停状态
+        self.game_active = False
         self.reset_stats()
 
     def reset_stats(self):

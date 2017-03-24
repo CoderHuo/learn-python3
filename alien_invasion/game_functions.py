@@ -35,7 +35,7 @@ def check_keyup_event(event, ship):
         ship.m_DOWN = False
 
 
-def check_events(screen, ai_settings, ship, bullets):
+def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -44,6 +44,9 @@ def check_events(screen, ai_settings, ship, bullets):
             check_keydown_event(event.key, screen, ai_settings, ship, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_event(event.key, ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_button_event(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y)
 
 
 def get_number_aliens_cols(ai_settings, alien_width):
@@ -160,14 +163,29 @@ def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens):
         create_fleet(screen, ai_settings, aliens)
 
 
-def update_screen(screen, ai_settings, status, ship, bullets, aliens):
+def check_button_event(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y):
+    """玩家单击Play按钮时开始游戏"""
+    button_click = play_button.rect.collidepoint(mouse_x, mouse_y)
+    if button_click and not status.game_active:
+        #重置游戏
+        status.game_active = True
+        bullets.empty()
+        aliens.empty()
+        create_fleet(screen, ai_settings, aliens)
+        ship.center_ship()
+        #隐藏光标
+        pygame.mouse.set_visible(False)
+
+
+def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button):
     """更新屏幕上的图像，并切换到新屏幕"""
-    # 更新飞船
-    ship.update()
-    # 更新子弹
-    update_bullets(screen, ai_settings, bullets, aliens)
-    # 创建外星人并更新
-    update_alien(screen, ai_settings, status, ship, bullets, aliens)
+    if status.game_active:
+        # 更新飞船
+        ship.update()
+        # 更新子弹
+        update_bullets(screen, ai_settings, bullets, aliens)
+        # 创建外星人并更新
+        update_alien(screen, ai_settings, status, ship, bullets, aliens)
     # 填充背景色
     screen.fill(ai_settings.bg_color)
     # 绘制飞船、子弹、外星人
@@ -175,6 +193,10 @@ def update_screen(screen, ai_settings, status, ship, bullets, aliens):
     aliens.draw(screen)
     for bullet in bullets.sprites():
         bullet.draw_bullet()
+    if not status.game_active:
+        play_button.draw_button()
+        #显示光标
+        pygame.mouse.set_visible(True)
     pygame.display.flip()
 
 
