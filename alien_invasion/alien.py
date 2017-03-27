@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-__author__ = 'Mr.Huo'
+
 import pygame
 from pygame.sprite import Sprite
+
+__author__ = 'Mr.Huo'
 
 
 class Alien(Sprite):

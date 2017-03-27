@@ -93,7 +93,7 @@ def check_fleet_edges(ai_settings, aliens):
 
 
 def change_fleet_direction(ai_settings, aliens):
-    '''将整群外星人下移，并改变他们的方向'''
+    """将整群外星人下移，并改变他们的方向"""
     for alien in aliens.sprites():
         alien.rect.y += ai_settings.alien_drop_speed
     for alien in aliens:
@@ -105,9 +105,8 @@ def update_alien(screen, ai_settings, status, ship, bullets, aliens):
     check_fleet_edges(ai_settings, aliens)
     aliens.update()
     # 检查是外星人是否相撞
-    hit_alien = None
     hit_alien = pygame.sprite.spritecollideany(ship, aliens)
-    if hit_alien != None:
+    if hit_alien is not None:
         print('Ship hit!!!')
         # 删除被撞外星人
         aliens.remove(hit_alien)
@@ -179,13 +178,13 @@ def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_b
     if button_click and not status.game_active:
         # 重置游戏
         ai_settings.initialize_dynamic_settings()
-        #更新游戏状态相关
+        # 更新游戏状态相关
         status.game_active = True
         status.reset_stats()
         # 更新记分相关
         scoreboart.prep_score()
         scoreboart.prep_level()
-        #更新子弹、飞船、外星人
+        # 更新子弹、飞船、外星人
         bullets.empty()
         aliens.empty()
         create_fleet(screen, ai_settings, aliens)

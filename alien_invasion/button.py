@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-__author__ = 'Mr.Huo'
 
 import pygame
 
+__author__ = 'Mr.Huo'
 
-class Button():
+
+class Button:
     def __init__(self, screen, msg):
         # 设置按钮的属性
         self.screen = screen

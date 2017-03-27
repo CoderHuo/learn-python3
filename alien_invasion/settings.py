@@ -4,7 +4,7 @@
 __author__ = 'Mr.Huo'
 
 
-class Settings():
+class Settings:
     def __init__(self):
         # 主窗口设置
         self.screen_width = 1200

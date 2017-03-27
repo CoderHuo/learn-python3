@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'Mr.Huo'
 import pygame
 from pygame.sprite import Sprite
+
+__author__ = 'Mr.Huo'
 
 
 class Bullet(Sprite):
@@ -20,7 +21,7 @@ class Bullet(Sprite):
         self.speed = ai_settings.bullet_speed
 
     def update(self):
-        '''向上移动子弹'''
+        """向上移动子弹"""
         self.y -= self.speed
         self.rect.y = self.y
 

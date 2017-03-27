@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-__author__ = 'Mr.Huo'
-
 import pygame
 from settings import Settings
 from ship import Ship
@@ -11,8 +9,11 @@ import game_functions as gf
 import time
 from pygame.sprite import Group
 from game_status import GameStatus
-from  button import Button
+from button import Button
 from scoreboard import Scoreboard
+
+__author__ = 'Mr.Huo'
+
 
 def run_game():
     # 初始化游戏并创建一个屏幕对象
@@ -30,15 +31,15 @@ def run_game():
     play_button = Button(screen, "Play")
     # 创建存储游戏统计信息的实例，并创建记分牌
     status = GameStatus(ai_settings)
-    scoreboart = Scoreboard(screen, ai_settings,status)
+    scoreboart = Scoreboard(screen, ai_settings, status)
 
     # 开始游戏的主循环
     while True:
         time.sleep(ai_settings.ai_time)
         # if status.game_active:
         # 监视键盘和鼠标事件
-        gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button,scoreboart)
-        gf.update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button,scoreboart)
+        gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart)
+        gf.update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart)
         clock.tick(60)
 
     pygame.quit()
