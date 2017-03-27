@@ -31,15 +31,15 @@ def run_game():
     play_button = Button(screen, "Play")
     # 创建存储游戏统计信息的实例，并创建记分牌
     status = GameStatus(ai_settings)
-    scoreboart = Scoreboard(screen, ai_settings, status)
+    scoreboard = Scoreboard(screen, ai_settings, status)
 
     # 开始游戏的主循环
     while True:
         time.sleep(ai_settings.ai_time)
         # if status.game_active:
         # 监视键盘和鼠标事件
-        gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart)
-        gf.update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart)
+        gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboard)
+        gf.update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboard)
         clock.tick(60)
 
     pygame.quit()

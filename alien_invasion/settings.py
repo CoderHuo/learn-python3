@@ -12,7 +12,7 @@ class Settings:
         self.bg_color = (230, 230, 230)
         # 飞船属性
         self.ai_time = 0.01
-        self.ship_limit = 2
+        self.ship_limit = 3
         # 子弹属性bullet
 
         self.bullet_width = 300
