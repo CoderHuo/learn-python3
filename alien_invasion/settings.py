@@ -44,15 +44,3 @@ class Settings:
         self.alien_speed *= self.speedup_scale
         self.ship_speed *= self.speedup_scale
         self.alien_points = int(self.alien_points * self.alien_points_up_scale)
-
-    def __str__(self):
-        return 'This is the alien invasion settings'
-
-
-def main():
-    alien_setting = Settings()
-    print(alien_setting)
-
-
-if __name__ == '__main__':
-    main()

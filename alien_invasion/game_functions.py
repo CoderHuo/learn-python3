@@ -222,11 +222,3 @@ def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_butto
         # 显示光标
         pygame.mouse.set_visible(True)
     pygame.display.flip()
-
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()

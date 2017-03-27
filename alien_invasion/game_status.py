@@ -17,11 +17,3 @@ class GameStatus:
         self.score = 0
         # 游戏级别
         self.level = 1
-
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()

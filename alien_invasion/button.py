@@ -32,11 +32,3 @@ class Button:
         """绘制一个用颜色填充的按钮，再绘制文本"""
         self.screen.fill(self.button_color, self.rect)
         self.screen.blit(self.msg_image, self.msg_image_rect)
-
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
