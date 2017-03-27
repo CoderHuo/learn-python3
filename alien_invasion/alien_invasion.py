@@ -20,14 +20,8 @@ def run_game():
     pygame.init()
     ai_settings = Settings()
     status = GameStatus(ai_settings)
-
-    sc = pygame.display.Info()
-    print(sc.current_w,sc.current_h)
     screen = pygame.display.set_mode((ai_settings.screen_width, ai_settings.screen_height))
-    screen_rect = screen.get_rect()
-    screen_rect.center = (sc.current_w/2,sc.current_h/2)
     pygame.display.set_caption("Alien Invision")
-    print(pygame.display.Info())
     # 创建一个ship
     ship = Ship(screen, ai_settings)
     bullets = Group()

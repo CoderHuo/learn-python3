@@ -40,13 +40,14 @@ def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
-        elif event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN and status.game_active:
+            #未开始前，不发射子弹
             check_keydown_event(event.key, screen, ai_settings, ship, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_event(event.key, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_button_event(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y)
+            check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y)
 
 
 def get_number_aliens_cols(ai_settings, alien_width):
@@ -160,14 +161,16 @@ def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens):
     pygame.sprite.groupcollide(bullets, aliens, True, True)
     if len(aliens) == 0:
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(screen, ai_settings, aliens)
 
 
-def check_button_event(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y):
+def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y):
     """玩家单击Play按钮时开始游戏"""
     button_click = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_click and not status.game_active:
         #重置游戏
+        ai_settings.initialize_dynamic_settings
         status.game_active = True
         bullets.empty()
         aliens.empty()

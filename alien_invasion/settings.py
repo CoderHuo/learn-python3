@@ -11,21 +11,38 @@ class Settings():
         self.screen_height = 600
         self.bg_color = (230, 230, 230)
         # 飞船属性
-        self.ship_speed = 3.5
         self.ai_time = 0.01
-        self.ship_limit = 3
+        self.ship_limit = 2
         # 子弹属性bullet
-        self.bullet_speed = 2
+
         self.bullet_width = 300
         self.bullet_height = 15
         self.bullet_color = (100, 60, 60)
         # 子弹数量
         self.bullets_allowed = 10
 
-        #外星人
-        self.alien_speed = 1
+        # 外星人
         self.alien_direction = 1
-        self.alien_drop_speed =10
+        self.alien_drop_speed = 10
+
+        # 游戏加速节奏
+        self.speedup_scale = 1.2
+
+        self.initialize_dynamic_settings()
+
+
+    def initialize_dynamic_settings(self):
+        """初始化随游戏进行而变化的设置"""
+        self.bullet_speed = 2
+        self.alien_speed = 1
+        self.ship_speed = 3.5
+
+
+    def increase_speed(self):
+        """提高速度设置"""
+        self.bullet_speed *= self.speedup_scale
+        self.alien_speed *= self.speedup_scale
+        self.ship_speed *= self.speedup_scale
 
     def __str__(self):
         return 'This is the alien invasion settings'
