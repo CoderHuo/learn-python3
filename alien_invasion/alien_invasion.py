@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pygame
+import pygame, pickle
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
@@ -13,6 +13,8 @@ from button import Button
 from scoreboard import Scoreboard
 
 __author__ = 'Mr.Huo'
+
+statusfile = 'status'
 
 
 def run_game():
@@ -30,7 +32,14 @@ def run_game():
     # 创建开始按钮
     play_button = Button(screen, "Play")
     # 创建存储游戏统计信息的实例，并创建记分牌
-    status = GameStatus(ai_settings)
+    try:
+        print('00000')
+        status_file = open(statusfile, 'rb')
+        status = pickle.load(status_file)
+    except FileNotFoundError:
+        print('11111')
+        status = GameStatus(ai_settings)
+
     scoreboard = Scoreboard(screen, ai_settings, status)
 
     # 开始游戏的主循环
@@ -41,8 +50,15 @@ def run_game():
         gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboard)
         gf.update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboard)
         clock.tick(60)
-
-    pygame.quit()
+        try:
+            print('22222')
+            status_file = open(statusfile, 'xb')
+            pickle.dump(GameStatus, status_file)
+        except FileExistsError:
+            print('33333')
+            status_file = open(statusfile, 'r+b')
+            pickle.dump(GameStatus, status_file)
+            pass
 
 
 def main():

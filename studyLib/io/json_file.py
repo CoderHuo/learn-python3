@@ -15,8 +15,8 @@ class Student(object):
         self.age = age
 
 
-def student2json(std):
-    return {'name': std.name, 'age': std.age}
+    def student2json(std):
+        return {'name': std.name, 'age': std.age}
 
 
 def main():
@@ -27,18 +27,18 @@ def main():
         json.dump(dp, json_file)
         json_file = open(jsonDictName, 'rt')
         d1 = json.load(json_file)
-        print(d1)
+        print("D1",d1)
     except FileExistsError:
         json_file = open(jsonDictName, 'r+t')
         try:
             d1 = json.load(json_file)
-            print(d1)
+            print("D2",d1)
         except Exception as err:
             print(err)
             json.dump(dp, json_file)
             json_file.seek(0)
             d1 = json.load(json_file)
-            print(d1)
+            print("D3",d1)
     finally:
         if json_file:
             json_file.close()

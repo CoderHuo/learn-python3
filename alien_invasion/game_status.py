@@ -17,3 +17,6 @@ class GameStatus:
         self.score = 0
         # 游戏级别
         self.level = 1
+
+    def GameStatus2json(std):
+        return {'high_score': std.high_score}
