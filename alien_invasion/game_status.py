@@ -15,6 +15,8 @@ class GameStatus():
     def reset_stats(self):
         self.ships_left = self.ai_settings.ship_limit
         self.score = 0
+        # 游戏级别
+        self.level =1
 
 
 def main():

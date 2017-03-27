@@ -23,6 +23,7 @@ class Scoreboard():
         #初始化得分图像
         self.prep_score()
         self.prep_hight_score()
+        self.prep_level()
 
     def prep_score(self):
         """将得分转换为一幅渲染的图像"""
@@ -35,7 +36,7 @@ class Scoreboard():
         self.score_rect.top = self.screen_rect.top +10
 
     def prep_hight_score(self):
-        """将得分转换为一幅渲染的图像"""
+        """将最高得分转换为一幅渲染的图像"""
         high_rounded_score =int(round(self.status.high_score,-1))
         high_score_str =  "{:,}".format(high_rounded_score)
         self.high_score_image = self.font.render(high_score_str,True,self.text_color,self.ai_settings.bg_color)
@@ -44,9 +45,19 @@ class Scoreboard():
         self.high_score_rect.centerx = self.screen_rect.centerx
         self.high_score_rect.top = self.screen_rect.top +10
 
+    def prep_level(self):
+        """将级别转换为一幅渲染的图像"""
+        level_str =  str(self.status.level)
+        self.level_image = self.font.render(level_str,True,self.text_color,self.ai_settings.bg_color)
+
+        self.level_rect = self.level_image.get_rect()
+        self.level_rect.right = self.score_rect.right
+        self.level_rect.top = self.score_rect.bottom +10
+
     def show_score(self):
         self.screen.blit(self.score_image,self.score_rect)
         self.screen.blit(self.high_score_image,self.high_score_rect)
+        self.screen.blit(self.level_image,self.level_rect)
 
 
 def main():

@@ -36,7 +36,7 @@ def check_keyup_event(event, ship):
         ship.m_DOWN = False
 
 
-def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button,scoreboart):
+def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -48,7 +48,8 @@ def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button
             check_keyup_event(event.key, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y,scoreboart)
+            check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y,
+                              scoreboart)
 
 
 def get_number_aliens_cols(ai_settings, alien_width):
@@ -162,23 +163,29 @@ def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, 
         # 超级子弹更新分数
         for alien in collisions.values():
             status.score += (ai_settings.alien_points * len(alien))
-            check_high_score(status,scoreboart)
+            check_high_score(status, scoreboart)
         scoreboart.prep_score()
     if len(aliens) == 0:
         bullets.empty()
         ai_settings.increase_speed()
+        status.level += 1
+        scoreboart.prep_level()
         create_fleet(screen, ai_settings, aliens)
 
 
-def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y,scoreboart):
+def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y, scoreboart):
     """玩家单击Play按钮时开始游戏"""
     button_click = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_click and not status.game_active:
         # 重置游戏
         ai_settings.initialize_dynamic_settings()
+        #更新游戏状态相关
         status.game_active = True
         status.reset_stats()
+        # 更新记分相关
         scoreboart.prep_score()
+        scoreboart.prep_level()
+        #更新子弹、飞船、外星人
         bullets.empty()
         aliens.empty()
         create_fleet(screen, ai_settings, aliens)
@@ -186,11 +193,13 @@ def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_b
         # 隐藏光标
         pygame.mouse.set_visible(False)
 
-def  check_high_score(status,scoreboart):
+
+def check_high_score(status, scoreboart):
     """检查是否诞生了最高分"""
     if status.high_score < status.score:
-        status.high_score =  status.score
+        status.high_score = status.score
         scoreboart.prep_hight_score()
+
 
 def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart):
     """更新屏幕上的图像，并切换到新屏幕"""
