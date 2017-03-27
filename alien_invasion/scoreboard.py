@@ -25,7 +25,8 @@ class Scoreboard():
 
     def prep_score(self):
         """将得分转换为一幅渲染的图像"""
-        score_str =  str(self.status.score)
+        rounded_score =int(round(self.status.score,-1))
+        score_str =  "{:,}".format(rounded_score)
         self.score_image = self.font.render(score_str,True,self.text_color,self.ai_settings.bg_color)
 
         self.score_rect = self.score_image.get_rect()

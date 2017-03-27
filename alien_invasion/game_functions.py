@@ -161,10 +161,9 @@ def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, 
     '''检查是否有子弹击中外星人，如果是这样就删除对应的子弹和外星人'''
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if collisions:
-        #超级子弹更新分数
-        for key in collisions.keys():
-            for i in range(0,len(collisions[key])):
-                status.score += ai_settings.alien_points
+        # 超级子弹更新分数
+        for alien in collisions.values():
+            status.score += (ai_settings.alien_points * len(alien))
         scoreboart.prep_score()
     if len(aliens) == 0:
         bullets.empty()

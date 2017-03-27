@@ -40,7 +40,6 @@ def run_game():
         gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button)
         gf.update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button,scoreboart)
         clock.tick(60)
-        # else:
 
     pygame.quit()
 
