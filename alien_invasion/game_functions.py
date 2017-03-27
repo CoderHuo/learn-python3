@@ -146,7 +146,7 @@ def fire_bullet(screen, ai_settings, ship, bullets):
         bullets.add(new_bullet)
 
 
-def update_bullets(screen, ai_settings, bullets, aliens):
+def update_bullets(screen, ai_settings, bullets, aliens, status, scoreboart):
     """更新子弹的位置，并删除已消失的子弹"""
     # 更新子弹的位置
     bullets.update()
@@ -154,12 +154,18 @@ def update_bullets(screen, ai_settings, bullets, aliens):
     for bullet in bullets:
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    check_bullet_alien_collisions(screen, ai_settings, bullets, aliens)
+    check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, scoreboart)
 
 
-def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens):
+def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, scoreboart):
     '''检查是否有子弹击中外星人，如果是这样就删除对应的子弹和外星人'''
-    pygame.sprite.groupcollide(bullets, aliens, True, True)
+    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if collisions:
+        #超级子弹更新分数
+        for key in collisions.keys():
+            for i in range(0,len(collisions[key])):
+                status.score += ai_settings.alien_points
+        scoreboart.prep_score()
     if len(aliens) == 0:
         bullets.empty()
         ai_settings.increase_speed()
@@ -187,7 +193,7 @@ def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_butto
         # 更新飞船
         ship.update()
         # 更新子弹
-        update_bullets(screen, ai_settings, bullets, aliens)
+        update_bullets(screen, ai_settings, bullets, aliens, status, scoreboart)
         # 创建外星人并更新
         update_alien(screen, ai_settings, status, ship, bullets, aliens)
     # 填充背景色

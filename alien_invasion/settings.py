@@ -24,9 +24,11 @@ class Settings():
         # 外星人
         self.alien_direction = 1
         self.alien_drop_speed = 10
+        self.alien_points =10
 
         # 游戏加速节奏
         self.speedup_scale = 1.2
+        self.alien_points_up_scale = 5
 
         self.initialize_dynamic_settings()
 
@@ -43,6 +45,7 @@ class Settings():
         self.bullet_speed *= self.speedup_scale
         self.alien_speed *= self.speedup_scale
         self.ship_speed *= self.speedup_scale
+        self.alien_points += self.alien_points_up_scale
 
     def __str__(self):
         return 'This is the alien invasion settings'
