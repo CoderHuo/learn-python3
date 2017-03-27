@@ -5,6 +5,7 @@ import pygame
 from bullet import Bullet
 from alien import Alien
 import time
+from scoreboard import Scoreboard
 
 __author__ = 'Mr.Huo'
 
@@ -41,7 +42,7 @@ def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button
         if event.type == pygame.QUIT:
             sys.exit()
         elif event.type == pygame.KEYDOWN and status.game_active:
-            #未开始前，不发射子弹
+            # 未开始前，不发射子弹
             check_keydown_event(event.key, screen, ai_settings, ship, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_event(event.key, ship)
@@ -169,18 +170,18 @@ def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_b
     """玩家单击Play按钮时开始游戏"""
     button_click = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_click and not status.game_active:
-        #重置游戏
+        # 重置游戏
         ai_settings.initialize_dynamic_settings
         status.game_active = True
         bullets.empty()
         aliens.empty()
         create_fleet(screen, ai_settings, aliens)
         ship.center_ship()
-        #隐藏光标
+        # 隐藏光标
         pygame.mouse.set_visible(False)
 
 
-def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button):
+def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart):
     """更新屏幕上的图像，并切换到新屏幕"""
     if status.game_active:
         # 更新飞船
@@ -194,11 +195,12 @@ def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_butto
     # 绘制飞船、子弹、外星人
     ship.blitme()
     aliens.draw(screen)
+    scoreboart.show_score()
     for bullet in bullets.sprites():
         bullet.draw_bullet()
     if not status.game_active:
         play_button.draw_button()
-        #显示光标
+        # 显示光标
         pygame.mouse.set_visible(True)
     pygame.display.flip()
 
