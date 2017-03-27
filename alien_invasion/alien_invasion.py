@@ -37,7 +37,7 @@ def run_game():
         time.sleep(ai_settings.ai_time)
         # if status.game_active:
         # 监视键盘和鼠标事件
-        gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button)
+        gf.check_events(screen, ai_settings, status, ship, bullets, aliens, play_button,scoreboart)
         gf.update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button,scoreboart)
         clock.tick(60)
 

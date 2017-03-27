@@ -11,7 +11,7 @@ __author__ = 'Mr.Huo'
 
 
 def check_keydown_event(event, screen, ai_settings, ship, bullets):
-    '''响应按键'''
+    """响应按键"""
     if event in (pygame.K_RIGHT, pygame.K_d):
         ship.m_RIGHT = True
     elif event in (pygame.K_LEFT, pygame.K_a):
@@ -25,7 +25,7 @@ def check_keydown_event(event, screen, ai_settings, ship, bullets):
 
 
 def check_keyup_event(event, ship):
-    '''响应松开'''
+    """响应松开"""
     if event in (pygame.K_RIGHT, pygame.K_d):
         ship.m_RIGHT = False
     elif event in (pygame.K_LEFT, pygame.K_a):
@@ -36,7 +36,7 @@ def check_keyup_event(event, ship):
         ship.m_DOWN = False
 
 
-def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button):
+def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button,scoreboart):
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -48,25 +48,23 @@ def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button
             check_keyup_event(event.key, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y)
+            check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y,scoreboart)
 
 
 def get_number_aliens_cols(ai_settings, alien_width):
     available_space_x = ai_settings.screen_width - 2 * alien_width
-    number_aliens_x = int(available_space_x / (2 * alien_width))
-    return number_aliens_x
+    return int(available_space_x / (2 * alien_width))
 
 
 def get_number_aliens_rows(ai_settings, alien_height):
     available_space_y = ai_settings.screen_height / 3 * 2
-    number_aliens_y = int(available_space_y / (alien_height * 2))
-    return number_aliens_y
+    return int(available_space_y / (alien_height * 2))
 
 
 def create_aliens(screen, ai_settings, aliens, col_number, raw_number):
     alien = Alien(screen, ai_settings)
     alien.x = alien.rect.width + 2 * alien.rect.width * col_number
-    alien.y = alien.rect.height * 2 * raw_number
+    alien.y = alien.rect.height * 2 * raw_number + alien.rect.height
     alien.rect.x = alien.x
     alien.rect.y = alien.y
     aliens.add(alien)
@@ -158,12 +156,13 @@ def update_bullets(screen, ai_settings, bullets, aliens, status, scoreboart):
 
 
 def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, scoreboart):
-    '''检查是否有子弹击中外星人，如果是这样就删除对应的子弹和外星人'''
+    """检查是否有子弹击中外星人，如果是这样就删除对应的子弹和外星人"""
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if collisions:
         # 超级子弹更新分数
         for alien in collisions.values():
             status.score += (ai_settings.alien_points * len(alien))
+            check_high_score(status,scoreboart)
         scoreboart.prep_score()
     if len(aliens) == 0:
         bullets.empty()
@@ -171,13 +170,15 @@ def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, 
         create_fleet(screen, ai_settings, aliens)
 
 
-def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y):
+def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_button, mouse_x, mouse_y,scoreboart):
     """玩家单击Play按钮时开始游戏"""
     button_click = play_button.rect.collidepoint(mouse_x, mouse_y)
     if button_click and not status.game_active:
         # 重置游戏
-        ai_settings.initialize_dynamic_settings
+        ai_settings.initialize_dynamic_settings()
         status.game_active = True
+        status.reset_stats()
+        scoreboart.prep_score()
         bullets.empty()
         aliens.empty()
         create_fleet(screen, ai_settings, aliens)
@@ -185,6 +186,11 @@ def check_play_button(screen, ai_settings, status, ship, bullets, aliens, play_b
         # 隐藏光标
         pygame.mouse.set_visible(False)
 
+def  check_high_score(status,scoreboart):
+    """检查是否诞生了最高分"""
+    if status.high_score < status.score:
+        status.high_score =  status.score
+        scoreboart.prep_hight_score()
 
 def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboart):
     """更新屏幕上的图像，并切换到新屏幕"""
