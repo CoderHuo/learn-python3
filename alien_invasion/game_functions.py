@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import sys
+import sys,pickle
 import pygame
 from bullet import Bullet
 from alien import Alien
 import time
 from scoreboard import Scoreboard
+from game_status import GameStatus
+from settings import Settings
 
 __author__ = 'Mr.Huo'
-
+#保存Gamestatus的文件名
+statusfile = 'status'
 
 def check_keydown_event(event, screen, ai_settings, ship, bullets):
     """响应按键"""
@@ -40,6 +43,7 @@ def check_events(screen, ai_settings, status, ship, bullets, aliens, play_button
     """响应按键和鼠标事件"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            write_gamestatus(status)
             sys.exit()
         elif event.type == pygame.KEYDOWN and status.game_active:
             # 未开始前，不发射子弹
@@ -200,6 +204,31 @@ def check_high_score(status, scoreboard):
     if status.high_score < status.score:
         status.high_score = status.score
         scoreboard.prep_hight_score()
+
+
+def read_gamestatus(ai_settings,statusfile='GameStatus'):
+    """从文件读取GameStatus"""
+    try:
+        status_file = open(statusfile, 'rb')
+        status = pickle.load(status_file)
+        status.reset_stats()
+    except FileNotFoundError:
+        status = GameStatus(ai_settings)
+    except Exception as err:
+        print("open gamestatus error",err)
+    return status
+
+
+def write_gamestatus(status,statusfile='GameStatus'):
+    """把GameStatus写入文件，下次开始游戏读取，主要是保存最高分数记录"""
+    try:
+        status_file = open(statusfile, 'xb')
+        pickle.dump(status, status_file)
+    except FileExistsError:
+        status_file = open(statusfile, 'r+b')
+        pickle.dump(status, status_file)
+    except Exception as err:
+        print("write gamestatus error",err)
 
 
 def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboard):
