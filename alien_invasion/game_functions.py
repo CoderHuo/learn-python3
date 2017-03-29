@@ -149,7 +149,7 @@ def fire_bullet(screen, ai_settings, ship, bullets):
         bullets.add(new_bullet)
 
 
-def update_bullets(screen, ai_settings, bullets, aliens, status, scoreboard):
+def update_bullets(screen, ai_settings,ship, bullets, aliens, status, scoreboard):
     """更新子弹的位置，并删除已消失的子弹"""
     # 更新子弹的位置
     bullets.update()
@@ -157,10 +157,10 @@ def update_bullets(screen, ai_settings, bullets, aliens, status, scoreboard):
     for bullet in bullets:
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, scoreboard)
+    check_bullet_alien_collisions(screen, ai_settings,ship, bullets, aliens, status, scoreboard)
 
 
-def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, scoreboard):
+def check_bullet_alien_collisions(screen, ai_settings,ship, bullets, aliens, status, scoreboard):
     """检查是否有子弹击中外星人，如果是这样就删除对应的子弹和外星人"""
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
     if collisions:
@@ -171,8 +171,8 @@ def check_bullet_alien_collisions(screen, ai_settings, bullets, aliens, status, 
         scoreboard.prep_score()
     if len(aliens) == 0:
         bullets.empty()
-        ai_settings.increase_speed()
         status.level += 1
+        update_speed(ai_settings, ship)
         scoreboard.prep_level()
         create_fleet(screen, ai_settings, aliens)
 
@@ -230,6 +230,13 @@ def write_gamestatus(status,statusfile='GameStatus'):
     except Exception as err:
         print("write gamestatus error",err)
 
+def update_speed(ai_settings, ship):
+    #更新游戏速度，包括飞船的
+    #飞船只有撞击后才会重新创建所以其速度要主动在消灭一群外星人后更新
+    #而子弹、外星人会在游戏中消灭外星人后创建只需更新setting里面的速度就行
+    ship.speed = ai_settings.ship_speed
+    ai_settings.increase_speed()
+
 
 def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_button, scoreboard):
     """更新屏幕上的图像，并切换到新屏幕"""
@@ -237,7 +244,7 @@ def update_screen(screen, ai_settings, status, ship, bullets, aliens, play_butto
         # 更新飞船
         ship.update()
         # 更新子弹
-        update_bullets(screen, ai_settings, bullets, aliens, status, scoreboard)
+        update_bullets(screen, ai_settings,ship, bullets, aliens, status, scoreboard)
         # 创建外星人并更新
         update_alien(screen, ai_settings, status, ship, bullets, aliens, scoreboard)
     # 填充背景色
