@@ -9,18 +9,19 @@ __author__ = 'Mr.Huo'
 
 def main():
     """UDP server"""
-    udp_addr = (nt.LOCALIP, nt.UDP_PORT)
+    udp_server_addr = (nt.LOCALIP, nt.UDP_PORT_S)
     udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_server.bind(udp_addr)
-    print('Bind UDP on %d...' % nt.UDP_PORT)
+    udp_server.bind(udp_server_addr)
+    print('Bind UDP on %d...' % nt.UDP_PORT_S)
     while True:
         data, addr = udp_server.recvfrom(1024)
-        if data and data != b'exit':
-            print('server receive data=(%s) from %s'%(data.decode(),addr))
+        print('server receive data=(%s) from %s' % (data.decode(), addr))
+        if data != b'exit':
             udp_server.sendto(b'Hello %s' % data, addr)
-        elif not data or data == b'exit':
+        elif data == b'exit':
             udp_server.sendto(b'ByeBye!', addr)
             break
+
     print('END')
     udp_server.close()
 
