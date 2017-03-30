@@ -3,3 +3,5 @@
 .project
 .pydevproject
 *__pycache__*
+GameStatus
+sina*
