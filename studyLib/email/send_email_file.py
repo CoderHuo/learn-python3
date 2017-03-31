@@ -70,6 +70,9 @@ def main():
         msg.attach(attach_file)
 
     email_server = smtplib.SMTP(smtp_server, 465)
+    #加密SMTP
+    email_server.starttls()
+
     email_server.set_debuglevel(1)
     email_server.login(from_addr, password)
     email_server.sendmail(from_addr, [to_addr], msg.as_string())
