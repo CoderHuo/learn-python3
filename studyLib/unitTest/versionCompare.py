@@ -47,8 +47,8 @@ def compare(s1, s2, len):
 
 
 def main():
-    v1 = '111a-.2.1'
-    v2 = '111b.2.1'
+    v1 = '1.2.3'
+    v2 = '1.11.2'
     res = version_compare(v1, v2)
     print(res)
     v1 = ''
@@ -57,4 +57,7 @@ def main():
     pass
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()
+    if 'b' > 'a':
+        print(True)
