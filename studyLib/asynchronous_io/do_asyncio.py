@@ -8,6 +8,7 @@ import threading
 __author__ = 'Mr.Huo'
 
 
+# asyncio.coroutine把一个generator标记为coroutine类型
 @asyncio.coroutine
 def hello():
     print('Hello World! (%s)' % threading.current_thread())

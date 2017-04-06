@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-import mysql.connector
+import pymysql
+from pymysql import connections,cursors
 
 __author__ = 'Mr.Huo'
 
@@ -12,7 +12,7 @@ def main():
     mysql_host = '127.0.0.1'
     mysql_database = 'world'
     # 创建MYSQL连接
-    mysql_conn = mysql.connector.connect(user=mysql_user, password=mysql_password)
+    mysql_conn = pymysql.connect(user=mysql_user, password=mysql_password)
     # 创建游标
     mysql_cursor = mysql_conn.cursor()
     # 创建数据库
