@@ -5,6 +5,7 @@ import logging, socket
 import asyncio, os, json, time
 from datetime import datetime
 from aiohttp import web
+import aiomysql
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,6 +17,7 @@ async web application.
 
 # 获取本机IP地址
 LOCALIP = socket.gethostbyname(socket.gethostname())
+
 
 
 def index(request):
@@ -32,9 +34,9 @@ def index(request):
 @asyncio.coroutine
 def init(loop):
     app = web.Application(loop=loop)
-    app.router.add_route('GET', '/', index)
+    app.router.add_route('GET', '/index', index)
     srv = yield from loop.create_server(app.make_handler(), LOCALIP, 9000)
-    logging.info('server started at http://%s:9000...'%LOCALIP)
+    logging.info('server started at http://%s:9000...' % LOCALIP)
     return srv
 
 
