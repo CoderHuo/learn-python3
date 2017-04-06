@@ -6,7 +6,7 @@ import sys
 __author__ = 'Mr.Huo'
 
 print(sys.path)
-from studyLib.unitTest.mydict import MyDict
+from .mydict import MyDict
 
 
 class TestMyDict(unittest.TestCase):
