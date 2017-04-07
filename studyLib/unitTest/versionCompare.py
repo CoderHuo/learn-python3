@@ -1,63 +1,45 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
+
 __author__ = 'Mr.Huo'
 
 
 def version_compare(v1, v2):
-    if v1 == '' or v2 == '':
+    v1 = _parse_version(v1)
+    v2 = _parse_version(v2)
+    try:
+        return (v1 > v2) - (v1 < v2)
+    except:
+        return False
+
+
+def _parse_version(ver,separator='.',ignorecase=True):
+    if ver == '' or ver == None:
         raise RuntimeError("Version is null")
-
-    t1 = v1.split('.')
-    t2 = v2.split('.')
-    print(t1, t2)
-    result = 0
-    if len(t1) < len(t2):
-        result = compare(t1, t2, len(t1))
-        if result == 0:
-            result = -1
-    elif len(t1) > len(t2):
-        result = compare(t1, t2, len(t2))
-        if result == 0:
-            result = 1
-    else:
-        result = compare(t1, t2, len(t1))
-    # 输出判断结果
-    if result == 0:
-        print('The two versions are the same.')
-    elif result == -1:
-        print('The vesion:[%s] is newer.' % v2)
-    elif result == 1:
-        print('The vesion:[%s] is newer.' % v1)
-    return result
-
-
-def compare(s1, s2, len):
-    result = 0
-    for i in range(len):
-        if s1[i] < s2[i]:
-            result = -1
-            break
-        elif s1[i] > s2[i]:
-            result = 1
-            break
-        else:
-            result = 0
-    return result
+    if ignorecase:
+        ver =ver.lower()
+    pattern = re.compile(r'\d+|\D+')
+    ver_list = [int(x) if x.isdigit() else [int(y) if y.isdigit() else y for y in pattern.findall(x)] for x in
+                ver.split(separator)]
+    return ver_list
 
 
 def main():
-    v1 = '1.2.3'
-    v2 = '1.11.2'
-    res = version_compare(v1, v2)
-    print(res)
-    v1 = ''
-    v2 = '111b.2.1'
+    v1 = '111b-2-@Aw**--.2..1'
+    v2 = '111b-2-@Aw**--.2..1'
     # res = version_compare(v1, v2)
+    version_compare(v1, v2)
+    pattern = re.compile(r'\d+|\D+')
+    match = pattern.findall(v2)
+
+    print(match)
+    print([int(x) if x.isdigit() else x for x in match])
+    print(_parse_version(v2))
     pass
 
 
 if __name__ == '__main__':
     main()
-    if 'b' > 'a':
-        print(True)
+    print( ''<'1')
