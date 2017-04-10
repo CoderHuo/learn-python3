@@ -6,10 +6,10 @@ import re
 __author__ = 'Mr.Huo'
 
 
-def version_compare(v1, v2):
+def version_compare(v1, v2, separator='.', ignorecase=True, ignorenull=False):
     """版本号比较"""
-    ver1 = _parse_version(v1)
-    ver2 = _parse_version(v2)
+    ver1 = _parse_version(v1, separator, ignorecase, ignorenull)
+    ver2 = _parse_version(v2, separator, ignorecase, ignorenull)
     if len(ver1) < len(ver2):
         result = _compare(ver1, ver2, len(ver1))
         if result == 0:
@@ -129,7 +129,7 @@ def _cmp(str1, str2):
             return 0
 
 
-def _parse_version(ver, separator='.', ignorecase=True, ignorenull=False):
+def _parse_version(ver, separator, ignorecase, ignorenull):
     """
     版本号分析：默认以'.'分隔
     :param ver: 
