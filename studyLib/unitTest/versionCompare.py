@@ -61,18 +61,18 @@ def _compare(v1, v2, length):
                     break
             # v2 不是list，则为int 或者str，比较
             else:
-                result = _cmp(v1[i], v2[i])
+                result = _cmp_value(v1[i], v2[i])
                 if result == 0:
                     result == 1
                 break
         else:
             if isinstance(v2[i], list):
-                result = _cmp(v1[i], v2[i])
+                result = _cmp_value(v1[i], v2[i])
                 if result == 0:
                     result == -1
                 break
             else:
-                result = _cmp(v1[i], v2[i])
+                result = _cmp_value(v1[i], v2[i])
     return result
 
 
@@ -97,13 +97,13 @@ def _cmp_list(v1, v2, index):
             result = 1
         else:
             for i in range(index):
-                result = _cmp(v1[i], v2[i])
+                result = _cmp_value(v1[i], v2[i])
                 if result != 0:
                     break
     return result
 
 
-def _cmp(str1, str2):
+def _cmp_value(str1, str2):
     """
     比较str 和 int 大小，都是int则按照int比较，否则按照str比较
     :param str1: 
