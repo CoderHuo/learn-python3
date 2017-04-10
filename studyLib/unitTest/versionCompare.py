@@ -2,14 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import re
+import logging
+
+logging.basicConfig(level=logging.WARNING,
+                    format="%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
 
 __author__ = 'Mr.Huo'
 
 
-def version_compare(v1, v2, separator='.', ignorecase=True, ignorenull=False):
+def version_compare(v1, v2, separator='.', ignore_case=True, ignore_null=False):
     """版本号比较"""
-    ver1 = _parse_version(v1, separator, ignorecase, ignorenull)
-    ver2 = _parse_version(v2, separator, ignorecase, ignorenull)
+    ver1 = _parse_version(v1, separator, ignore_case, ignore_null)
+    ver2 = _parse_version(v2, separator, ignore_case, ignore_null)
     if len(ver1) < len(ver2):
         result = _compare(ver1, ver2, len(ver1))
         if result == 0:
@@ -20,12 +24,13 @@ def version_compare(v1, v2, separator='.', ignorecase=True, ignorenull=False):
             result = 1
     else:
         result = _compare(ver1, ver2, len(ver1))
+    # 结果提示信息
     if result == -1:
-        print('The version(%s) is the newer' % v2)
+        logging.info('The version[%s] is the newer.' % v2)
     elif result == 0:
-        print('The two versions are the same')
+        logging.info('The two versions are the same.')
     elif result == 1:
-        print('The version(%s) is the newer' % v1)
+        logging.info('The version[%s] is the newer.' % v1)
     return result
 
 
@@ -40,6 +45,7 @@ def _compare(v1, v2, length):
         0  : str1 = str2
         1  : str1 > str2
     """
+    result = 0
     for i in range(length):
         if isinstance(v1[i], list):
             # 都是list 则比较list里面元素，由于list里面元素有int、str，所以自己写比较方法
@@ -48,12 +54,12 @@ def _compare(v1, v2, length):
                     result = _cmp_list(v1[i], v2[i], len(v1[i]))
                     if result == 0:
                         # 当v1 v2 [0:len(v1[i])] 相等，则v2大
-                        result == -1
+                        result = -1
                 elif len(v1[i]) > len(v2[i]):
                     result = _cmp_list(v1[i], v2[i], len(v2[i]))
                     if result == 0:
                         # 当v1 v2 [0:len(v2[i])] 相等，则v1大
-                        result == 1
+                        result = 1
                 else:
                     result = _cmp_list(v1[i], v2[i], len(v1[i]))
                 # 如果比较结果不相等，则已有结果，退出循环
@@ -61,15 +67,21 @@ def _compare(v1, v2, length):
                     break
             # v2 不是list，则为int 或者str，比较
             else:
-                result = _cmp_value(v1[i], v2[i])
+                if not v1[i]:
+                    result = -1
+                else:
+                    result = _cmp_value(v1[i][0], v2[i])
                 if result == 0:
-                    result == 1
+                    result = 1
                 break
         else:
             if isinstance(v2[i], list):
-                result = _cmp_value(v1[i], v2[i])
+                if not v2[i]:
+                    result = 1
+                else:
+                    result = _cmp_value(v1[i], v2[i][0])
                 if result == 0:
-                    result == -1
+                    result = -1
                 break
             else:
                 result = _cmp_value(v1[i], v2[i])
@@ -87,13 +99,14 @@ def _cmp_list(v1, v2, index):
         0  : str1 = str2
         1  : str1 > str2
     """
-    if v1 == []:
-        if v2 == []:
+    result = 0
+    if not v1:
+        if not v2:
             result = 0
         else:
             result = -1
     else:
-        if v2 == []:
+        if not v2:
             result = 1
         else:
             for i in range(index):
@@ -129,44 +142,39 @@ def _cmp_value(str1, str2):
             return 0
 
 
-def _parse_version(ver, separator, ignorecase, ignorenull):
+def _parse_version(ver, separator, ignore_case, ignore_null):
     """
-    版本号分析：默认以'.'分隔
+    版本号分析：默认以'.'分隔,分析后为 [int ,[int ,str]]
     :param ver: 
     :param separator:  版本号分隔符默认'.'
-    :param ignorecase: 是否字母大小写
-    :param ignorenull: 是否忽略类似'..' 或'.' 版本号，不忽略则'..' 比'.'大
+    :param ignore_case: 是否字母大小写
+    :param ignore_null: 是否忽略类似'..' 或'.' 版本号，不忽略则'..' 比'.'大
     :return: list
     """
-    if ver == '' or ver == None:
+    if ver == '' or ver is None:
         raise RuntimeError("Version is null")
-    if ignorecase:
+    if ignore_case:
         ver = ver.lower()
     pattern = re.compile(r'\d+|\D+')
-    #
-    if ignorenull:
+    if ignore_null:
         ver_list = [int(x) if x.isdigit() else [int(y) if y.isdigit() else y for y in pattern.findall(x)] for x in
                     ver.split(separator) if x != '']
     else:
         ver_list = [int(x) if x.isdigit() else [int(y) if y.isdigit() else y for y in pattern.findall(x)] for x in
                     ver.split(separator)]
-    print(ver_list)
+    logging.info(ver_list)
     return ver_list
 
 
 def main():
-    v1 = '121b-2-@Aw**--.2......1.1'
-    v2 = '121b-2-@Aw**--.2..1'
+    v1 = '1a.1'
+    v2 = '.1'
     print(version_compare(v1, v2))
-    v1 = '121b-2-@Aw**--.2..1'
-    v2 = '121b-2-@Aw**--.2..1'
+    print(version_compare(v2, v1))
+    v1 = '1.1.aaaa'
+    v2 = '1a.1'
     print(version_compare(v1, v2))
-    v1 = '..'
-    v2 = '.'
-    print(version_compare(v1, v2))
-    v1 = '.'
-    v2 = '.'
-    print(version_compare(v1, v2))
+    print(version_compare(v2, v1))
     pass
 
 
