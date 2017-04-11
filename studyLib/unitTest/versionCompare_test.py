@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from versionCompare import version_compare
+from .versionCompare import version_compare
 
 __author__ = 'Mr.Huo'
 
@@ -14,15 +14,18 @@ class TestVerCmp(unittest.TestCase):
         v2 = '10.2a'
         v3 = '10.2b'
         v4 = '10.b1'
-        v5 = '.1'
-        v6 = '.a'
+        v5 = '.a'
+        v6 = '.A'
         v7 = 'a.2'
         self.assertEqual(version_compare(v1, v1), 0)
         self.assertEqual(version_compare(v1, v2), -1)
         self.assertEqual(version_compare(v2, v1), 1)
         self.assertEqual(version_compare(v3, v4), -1)
         self.assertEqual(version_compare(v5, v5), 0)
-        self.assertEqual(version_compare(v5, v6), -1)
+        self.assertEqual(version_compare(v5, v5,ignore_null=True), 0)
+        self.assertEqual(version_compare(v5, v6), 0)
+        self.assertEqual(version_compare(v5, v6,ignore_case=False), 1)
+        self.assertEqual(version_compare(v5, v6,ignore_case=False,ignore_null=True), 1)
         self.assertEqual(version_compare(v5, v7), -1)
         self.assertEqual(version_compare(v7, v5), 1)
 
