@@ -19,9 +19,17 @@ async web application.
 LOCALIP = socket.gethostbyname(socket.gethostname())
 
 
+def home_page(request):
+    with open("templates\index.html") as home:
+        return web.Response(body=home.read(), content_type='text/html')
 
-def index(request):
-    return web.Response(body=b'<h1>Awesome</h1>', content_type='text/html')
+
+def index_page(request):
+    return web.Response(body=b'<h1>Awesome Index</h1>', content_type='text/html')
+
+
+def go_page(request):
+    return web.Response(body=b'<h1>Go Go Go</h1>', content_type='text/html')
 
 
 # async def init(loop):
@@ -34,7 +42,9 @@ def index(request):
 @asyncio.coroutine
 def init(loop):
     app = web.Application(loop=loop)
-    app.router.add_route('GET', '/index', index)
+    app.router.add_route('GET', '/', home_page)
+    app.router.add_route('GET', '/index', index_page)
+    app.router.add_route('GET', '/go', go_page)
     srv = yield from loop.create_server(app.make_handler(), LOCALIP, 9000)
     logging.info('server started at http://%s:9000...' % LOCALIP)
     return srv
