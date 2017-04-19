@@ -3,3 +3,6 @@
 .project
 .pydevproject
 *__pycache__*
+GameStatus
+sina*
+mySQLite3.db
