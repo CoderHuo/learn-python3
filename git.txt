@@ -30,3 +30,4 @@
     git branch --set-upstream dev origin/dev         #指定本地dev分支与远程origin/dev分支的链接
     git remote                                       #查看远程库的信息,-v更详细的信息
     git push origin test:master                      #提交本地test分支作为远程的master分支
+    git checkout branch                              #test
