@@ -31,3 +31,4 @@
     git remote                                       #查看远程库的信息,-v更详细的信息
     git push origin test:master                      #提交本地test分支作为远程的master分支
     git checkout branch                              #test
+    git rev-parse HEAD                               #查看当前commit号
