@@ -3,7 +3,7 @@
 
 import matplotlib.pyplot as plt
 from random import choice
-
+import numpy as np
 __author__ = 'Mr.Huo'
 
 
@@ -85,10 +85,22 @@ def main():
     point_numbers = list(range(rw.num_points))
     # rw.fill_walk()
     rw.fill_walk_no_passed()
+    # 设置绘图窗口的尺寸
+    # 同时绘制多幅图表，可以给figure()传递一个整数参数指定Figure对象的序号，如果序号所指定的Figure对象已经存在，
+    # 将不创建新的对象，而只是让它成为当前的Figure对象
+    plt.figure(1)
+    # 在图表1中创建子图1
+    ax1 = plt.subplot(211)
+    # 在图表1中创建子图1
+    ax2 = plt.subplot(212)
+    # 选择图表1
+    plt.figure(1)
+    # 选择图表1的子图1
+    plt.sca(ax1)
     plt.scatter(rw.x_values, rw.y_values, c=point_numbers, cmap=plt.cm.Blues, s=1)
-    plt.show()
-    plt.plot(rw.x_values, rw.y_values)
-    plt.show()
+    # 选择图表1的子图2
+    plt.sca(ax2)
+    plt.scatter(rw.x_values, rw.y_values, c=point_numbers, cmap=plt.cm.Blues, s=1)
     # while True:
     #     rw = RandomWalk(1000)
     #     rw.fill_walk()
@@ -106,7 +118,21 @@ def main():
     #     keep_running = input('Make another randomwalk? (y/n)')
     #     if keep_running == 'n':
     #         break
-
-
+    plt.figure(2)
+    ax21 = plt.subplot(221)
+    ax22 = plt.subplot(222)
+    ax23 = plt.subplot(223)
+    ax24 = plt.subplot(224)
+    x = np.linspace(0, 3, 100)
+    for i in range(5):
+        plt.sca(ax21)
+        plt.plot(x, np.exp(i * x / 3))
+        plt.sca(ax22)
+        plt.plot(x, np.sin(i * x))
+        plt.sca(ax23)
+        plt.plot(x, np.cos(i * x))
+        plt.sca(ax24)
+        plt.plot(x, np.cosh(i * x))
+    plt.show()
 if __name__ == '__main__':
     main()
