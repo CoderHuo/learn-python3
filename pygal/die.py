@@ -24,13 +24,13 @@ def main():
     for roll_num in range(10000):
         result = die.roll()
         results.append(result)
-    print(results)
+    #print(results)
 
     frequencies = []
     for value in range(1,die.num_sides+1):
         frequency = results.count(value)
         frequencies.append(frequency)
-    print(frequencies)
+    #print(frequencies)
 
     # 绘制直方图
     hist = pygal.Bar()
@@ -40,6 +40,22 @@ def main():
     hist.y_title='Frequency of Result'
     hist.add(title="D6",values=frequencies)
     hist.render_to_file('C:\\Users\\zhuosha\\PycharmProjects\\haha.svg')
+    # 世界地图
+    wmap = pygal.maps.world.World()
+    wmap.title = "World Maps"
+    wmap.add('North America', ['ca', 'mx', 'us'])
+    wmap.render_to_file('C:\\Users\\zhuosha\\PycharmProjects\\wmap.svg')
 
+    # 世界地图
+    supra = pygal.maps.world.SupranationalWorld()
+    supra.title = "Seven continents(七大洲)"
+    supra.add('Asia(亚洲)', [('asia', 1)])
+    supra.add('Europe(欧洲)', [('europe', 1)])
+    supra.add('Africa(非洲)', [('africa', 1)])
+    supra.add('North america(北美洲)', [('north_america', 1)])
+    supra.add('South america(南美洲)', [('south_america', 1)])
+    supra.add('Oceania(大洋洲)', [('oceania', 1)])
+    supra.add('Antartica(南极洲)', [('antartica', 1)])
+    supra.render_to_file('C:\\Users\\zhuosha\\PycharmProjects\\SupranationalWorld.svg')
 if __name__ == '__main__':
     main()
