@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ShaoHua Blog</title>
+</head>
+<body>
+<p>
+    <a href="{% url 'blog:index' %}">Learning blog</a>
+</p>
+<P>
+    <a href="{% url 'blog:topics' %}">Learning blog topics</a>
+</P>
+
+{% block content %}{% endblock content %}
+</body>
+</html>

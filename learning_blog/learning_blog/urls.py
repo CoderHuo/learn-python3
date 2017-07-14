@@ -20,4 +20,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^polls/', include('polls.urls')),
     url(r'^githubpythonPJ/', include('pythonPJ_Github.urls')),
+    # 指定默认app
+    #url(r'^$', include('learning_blogs.urls')),
+    url(r'^blogs/', include('learning_blogs.urls')),
+    url(r'', include('learning_blogs.urls',namespace='blog')),
 ]
