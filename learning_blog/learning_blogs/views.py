@@ -8,6 +8,8 @@ from .models import Topic
 def index(request):
     return render(request, 'learning_blogs/index.html')
 
+def mystyle(request):
+    return render(request, 'learning_blogs/mystyle.css')
 
 def topics(request):
     """显示所有的主题"""
