@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     # my learning_blogs
     'learning_blogs',
     'users',
+    # 第三方APP
+    'bootstrap3',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +123,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# django-bootstrap3 设置
+BOOTSTRAP3 = {
+    'include_jquery': True,
+}
