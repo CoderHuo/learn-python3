@@ -1,5 +1,12 @@
 {% extends "learning_blogs/base.html" %}
 {% block content %}
+
+<P>
+    <a href="{% url 'learning_blogs:topics' %}">Learning blog topics</a>
+</P>
+<P>
+    <a href="{% url 'learning_blogs:new_topic' %}">Add a new topic</a>
+</P>
 <p>
     Learning Log helps you keep track of your learning, for any topic you're learning about.
 </p>

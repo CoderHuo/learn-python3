@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <title>ShaoHua Blog</title>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/mystyle.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mystyle.css' %}"/>
 </head>
 <body>
 <p>
-    <a href="{% url 'blog:index' %}">Learning blog</a>
+    <a href="{% url 'learning_blogs:index' %}">Learning blog</a>
 </p>
-<P>
-    <a href="{% url 'blog:topics' %}">Learning blog topics</a>
-</P>
-
-{% block content %}{% endblock content %}
+<p>
+    {% if user.is_authenticated %}
+    Hello, {{ user.username }}.
+    <a href="{% url 'users:logout' %}">log out</a>
+    {% else %}
+    <a href="{% url 'users:register' %}">register</a>
+    <a href="{% url 'users:login' %}">login</a>
+    {% endif %}
+    {% block content %}{% endblock content %}
+</p>
 </body>
 </html>

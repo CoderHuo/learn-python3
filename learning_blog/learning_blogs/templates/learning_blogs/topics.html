@@ -1,10 +1,13 @@
 {% extends "learning_blogs/base.html" %}
 {% block content %}
+<P>
+    <a href="{% url 'learning_blogs:new_topic' %}">Add a new topic</a>
+</P>
 <p>Topic</p>
 <ul>
     {% for topic in topics %}
         <li>
-            <a href="{% url 'blog:topic' topic.id %}">{{ topic }}</a>
+            <a href="{% url 'learning_blogs:topic' topic.id %}">{{ topic }}</a>
         </li>
     {% empty %}
         <li>No topics have been added yet.</li>

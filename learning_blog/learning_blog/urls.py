@@ -23,5 +23,6 @@ urlpatterns = [
     # 指定默认app
     #url(r'^$', include('learning_blogs.urls')),
     url(r'^blogs/', include('learning_blogs.urls')),
-    url(r'', include('learning_blogs.urls',namespace='blog')),
+    url(r'', include('learning_blogs.urls',namespace='learning_blogs')),
+    url(r'^users/', include('users.urls',namespace='users')),
 ]
