@@ -6,7 +6,7 @@
 <form action="{% url 'learning_blogs:new_entry' topic.id %}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button name="submit">add entry</button>
+    <button name="submit">Add entry</button>
 </form>
 
 {% endblock content %}

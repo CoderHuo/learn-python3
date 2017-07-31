@@ -6,6 +6,7 @@ from .models import Topic,Entry
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from .forms import TopicForm, EntryForm
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -30,7 +31,7 @@ def topic(request, topic_id):
     context = {'topic': topic, 'entries': entries}
     return render(request, 'learning_blogs/topic.html', context=context)
 
-
+@login_required
 def new_topic(request):
     """添加新主题"""
     if request.method != 'POST':
@@ -44,7 +45,7 @@ def new_topic(request):
     cotext = {'form': form}
     return render(request, 'learning_blogs/new_topic.html', cotext)
 
-
+@login_required
 def new_entry(request, topic_id):
     """在特定的主题中增加新条目"""
     topic = Topic.objects.get(id=topic_id)
@@ -62,7 +63,7 @@ def new_entry(request, topic_id):
     cotext = {'topic': topic, 'form': form}
     return render(request, 'learning_blogs/new_entry.html', cotext)
 
-
+@login_required
 def edit_entry(request, entry_id):
     """在特定的主题中增加新条目"""
     entry = Entry.objects.get(id=entry_id)
