@@ -7,6 +7,15 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button name="submit">save entry</button>
+    <input type="reset" value="Reset entry" onclick="return confirmReset()" class="buttonstyle"/>
+    <button onclick="window.close()">Close</button>
+    <script>
+        function confirmReset() {
+            var clickresult = false;
+            clickresult = window.confirm("点击重填后所有信息都将被清空。\n你确认重填吗？");
+            return clickresult;
+        }
+    </script>
 </form>
 
 {% endblock content %}

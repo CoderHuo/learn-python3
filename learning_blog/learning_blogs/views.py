@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.http import HttpResponse
-from .models import Topic,Entry
+from .models import Topic, Entry
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from .forms import TopicForm, EntryForm
@@ -31,6 +31,7 @@ def topic(request, topic_id):
     context = {'topic': topic, 'entries': entries}
     return render(request, 'learning_blogs/topic.html', context=context)
 
+
 @login_required
 def new_topic(request):
     """添加新主题"""
@@ -40,10 +41,13 @@ def new_topic(request):
     else:
         form = TopicForm(request.POST)
         if form.is_valid():
-            form.save()
+            new_topic = form.save(commit=False)
+            new_topic.owner = request.user
+            new_topic.save()
             return HttpResponseRedirect(reverse('learning_blogs:topics'))
-    cotext = {'form': form}
-    return render(request, 'learning_blogs/new_topic.html', cotext)
+    context = {'form': form}
+    return render(request, 'learning_blogs/new_topic.html', context)
+
 
 @login_required
 def new_entry(request, topic_id):
@@ -60,15 +64,17 @@ def new_entry(request, topic_id):
             new_entry.topic = topic
             new_entry.save()
             return HttpResponseRedirect(reverse('learning_blogs:topic', args=[topic_id]))
-    cotext = {'topic': topic, 'form': form}
-    return render(request, 'learning_blogs/new_entry.html', cotext)
+    context = {'topic': topic, 'form': form}
+    return render(request, 'learning_blogs/new_entry.html', context)
+
 
 @login_required
 def edit_entry(request, entry_id):
     """在特定的主题中增加新条目"""
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
-
+    if topic.owner != request.user:
+        raise Http404
     if request.method != 'POST':
         # 初次请求，使用当前条目填充表单
         form = EntryForm(instance=entry)
