@@ -15,14 +15,16 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^polls/', include('polls.urls')),
     url(r'^githubpythonPJ/', include('pythonPJ_Github.urls')),
     # 指定默认app
-    #url(r'^$', include('learning_blogs.urls')),
+    # url(r'^$', include('learning_blogs.urls')),
     url(r'^blogs/', include('learning_blogs.urls')),
-    url(r'', include('learning_blogs.urls',namespace='learning_blogs')),
-    url(r'^users/', include('users.urls',namespace='users')),
+    url(r'', include('learning_blogs.urls', namespace='learning_blogs')),
+    url(r'^users/', include('users.urls', namespace='users')),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
 ]
