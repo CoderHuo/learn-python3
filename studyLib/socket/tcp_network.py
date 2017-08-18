@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import socket, threading, time,multiprocessing
-
+import network_setting as ns
 __author__ = 'Mr.Huo'
 
 
@@ -10,12 +10,14 @@ def client_read(client):
     """客户端接收数据"""
     buffer = []
     while True:
-        data = client.recv(1024)
-        if data:
-            buffer.append(data)
-        else:
+        data = client.recv(204800)
+        if not data:
+            print("recv done!")
             break
+        buffer.append(data)
+        print("cli recv data len:",len(data))
     data = b''.join(buffer)
+    print(data)
     return data
 
 
@@ -24,7 +26,7 @@ def my_tcplink(sock, addr):
     print('Accept new connection from %s:%s...' % addr)
     sock.send(b'Welcome!')
     while True:
-        data = sock.recv(1024)
+        data = sock.recv(20480)
         print('server recv',data.decode())
         time.sleep(0.1)
         if not data or data == b'exit':
@@ -46,6 +48,7 @@ def my_server(server_addr):
         sock, addr = server.accept()
         t = threading.Thread(target=my_tcplink, args=(sock, addr))
         t.start()
+    server.close()
 
 
 def my_client(server_addr,senddata):
@@ -78,7 +81,7 @@ def main():
     # 关闭连接
     client.close()
 
-    server_addr = ('146.11.22.128', 9999)
+    server_addr = (ns.LOCALIP,ns.TCP_PORT_S)
     send_data1 = [b'aheuo',b'ashxao',b'bhaua']
     send_data2 = [b'aheuo',b'ashxao',b'bhaua']
     send_data3 = [b'aheuo',b'ashxao',b'bhaua']
