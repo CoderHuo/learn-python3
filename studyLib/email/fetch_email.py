@@ -67,8 +67,6 @@ def decode_str(s):
 def main():
     # email_addr = input("Email addr:")
     # password = input('PassWord:')
-    email_addr = 'shaohua.huo@cienet.com.cn'
-    password = 'zhixuan_860606'
     # email_server = input("smtp server:")
     server_addr = 'pop3.263xmail.com'
 
