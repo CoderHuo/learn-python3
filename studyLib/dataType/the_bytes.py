@@ -11,7 +11,7 @@ def main():
     # bytes 由字节作为基本元素(8位，取值0-255)组成的序列，为不可变序列
     the_bytes = bytes(blist)
     print('the bytes:    {0} \nthe bytes len:{1}'.format(the_bytes, len(the_bytes)))
-    print(bytes('霍少华', encoding='utf8'))
+    print(bytes('擎天柱', encoding='utf8'))
     # 字节数组
     the_byte_array = bytearray(blist)
     print('the byte array:    {0} \nthe byte array len:{1}'.format(the_byte_array, len(the_byte_array)))

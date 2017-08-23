@@ -34,7 +34,7 @@ class MyHash(object):
 
 
 def main():
-    s1 = '霍少华'
+    s1 = '擎天柱'
     md5 = hashlib.md5()
     md5.update(s1.encode(encoding='utf-8'))
     print(md5.hexdigest())
@@ -43,7 +43,7 @@ def main():
     print(myhash1)
     myhash2 = MyHash(file='bmptest.bmp', alg='sha256')
     print(myhash2)
-    myhash2.update("霍少华".encode())
+    myhash2.update("擎天柱".encode())
     print(myhash2)
     myhash3 = MyHash(alg='sha256')
     print(myhash3)
