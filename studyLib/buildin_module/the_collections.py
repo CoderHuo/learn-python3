@@ -33,7 +33,7 @@ def main():
     print(isinstance(p1, Point))
     print(isinstance(p1, tuple))
     Student = namedtuple('Student','name classNum sex')
-    std1 = Student("霍少华",0,'F')
+    std1 = Student("擎天柱",0,'F')
     print(std1)
     print(std1._asdict())
 
