@@ -12,10 +12,12 @@ def main():
     '''
     :return:
     '''
-    print(help(os))
+    #print(help(os))
     print("==========")
     print(os.listdir("c:/shaohua.huo/1"))
     print(os.times())
+    print(os.environ)
+    print(os.getlogin())
     print(dir(os))
     for root, dirs, files in os.walk("c:/shaohua.huo/1"):
         print(root, "consumes")

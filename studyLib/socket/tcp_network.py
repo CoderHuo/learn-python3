@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import socket, threading, time,multiprocessing
+import socket, threading, time, multiprocessing
 import network_setting as ns
+
 __author__ = 'Mr.Huo'
 
 
@@ -15,7 +16,7 @@ def client_read(client):
             print("recv done!")
             break
         buffer.append(data)
-        print("cli recv data len:",len(data))
+        print("cli recv data len:", len(data))
     data = b''.join(buffer)
     print(data)
     return data
@@ -27,7 +28,7 @@ def my_tcplink(sock, addr):
     sock.send(b'Welcome!')
     while True:
         data = sock.recv(20480)
-        print('server recv',data.decode())
+        print('server recv', data.decode())
         time.sleep(0.1)
         if not data or data == b'exit':
             sock.send(b'ByeBye!')
@@ -39,19 +40,23 @@ def my_tcplink(sock, addr):
 
 def my_server(server_addr):
     # 服务端
-    print(type(server_addr),server_addr)
+    print(type(server_addr), server_addr)
     server = socket.socket()
-    server.bind(server_addr)
-    server.listen(5)
-    print('Waiting for connection...')
-    while True:
-        sock, addr = server.accept()
-        t = threading.Thread(target=my_tcplink, args=(sock, addr))
-        t.start()
-    server.close()
+    try:
+        server.bind(server_addr)
+    except socket.error as expt:
+        print(expt)
+    else:
+        server.listen(5)
+        print('Waiting for connection...')
+        while True:
+            sock, addr = server.accept()
+            t = threading.Thread(target=my_tcplink, args=(sock, addr))
+            t.start()
+        server.close()
 
 
-def my_client(server_addr,senddata):
+def my_client(server_addr, senddata):
     # 客户端
     client = socket.socket()
     client.connect(server_addr)
@@ -74,22 +79,22 @@ def main():
     data = client_read(client)
     # 数据处理
     header, html = data.split(b'\r\n\r\n', 1)
-    #print(header.decode())
-    #print(html.decode())
+    # print(header.decode())
+    # print(html.decode())
     with open('sina.html', 'wb') as sina:
         sina.write(html)
     # 关闭连接
     client.close()
 
-    server_addr = (ns.LOCALIP,ns.TCP_PORT_S)
-    send_data1 = [b'aheuo',b'ashxao',b'bhaua']
-    send_data2 = [b'aheuo',b'ashxao',b'bhaua']
-    send_data3 = [b'aheuo',b'ashxao',b'bhaua']
+    server_addr = (ns.LOCALIP, ns.TCP_PORT_S)
+    send_data1 = [b'aheuo', b'ashxao', b'bhaua']
+    send_data2 = [b'aheuo', b'ashxao', b'bhaua']
+    send_data3 = [b'aheuo', b'ashxao', b'bhaua']
 
-    server_proc = multiprocessing.Process(target=my_server,args=(server_addr,))
-    client_proc1 = multiprocessing.Process(target=my_client,args=(server_addr,send_data1))
-    client_proc2 = multiprocessing.Process(target=my_client,args=(server_addr,send_data2))
-    client_proc3 = multiprocessing.Process(target=my_client,args=(server_addr,send_data3))
+    server_proc = multiprocessing.Process(target=my_server, args=(server_addr,))
+    client_proc1 = multiprocessing.Process(target=my_client, args=(server_addr, send_data1))
+    client_proc2 = multiprocessing.Process(target=my_client, args=(server_addr, send_data2))
+    client_proc3 = multiprocessing.Process(target=my_client, args=(server_addr, send_data3))
     server_proc.start()
     client_proc1.start()
     client_proc2.start()
