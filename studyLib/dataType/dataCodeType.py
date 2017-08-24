@@ -16,8 +16,10 @@ def main():
     #!/usr/bin/env python3    告诉Linux/OS X系统，这是一个Python可执行程序，Windows系统会忽略这个注释
     # -*- coding: utf-8 -*-   告诉Python解释器，按照UTF-8编码读取源代码，否则，你在源代码中写的中文输出可能会有乱码
     申明了UTF-8编码并且保存的文件也要是UTF-8
-    decode的作用是将其他编码的字符串转换成某种编码格式的字节数组，如str1.decode('gb2312')，表示将str1转换成gb2312编码的字节数组。
-    encode的作用是将字节数组已某种编码格式转换成字符串，如str2.encode('gb2312')，表示将字节数组str2转换成gb2312编码的字符串。
+    decode的作用是将某种编码格式的字节数组转换成Unicode编码的字符串：
+        如str1.decode('gb2312')，表示将gb2312编码的字节数组str1转换成Unicode编码的字符串。
+    encode的作用是将字节数组已某种编码格式转换成字符串：
+        如str2.encode('gb2312')，表示将Unicode编码的字符串str2转换成gb2312编码的字节数组。
     Python 3版本中，字符串是以Unicode编码的，也就是说，Python的字符串支持多语言
     '''
     help(main)
