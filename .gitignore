@@ -7,3 +7,4 @@ GameStatus
 sina*
 mySQLite3.db
 *.sqlite3
+.vs
