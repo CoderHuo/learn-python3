@@ -12,6 +12,8 @@ def main():
     udp_server_addr = (nt.LOCALIP, nt.UDP_PORT_S)
     udp_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_server.bind(udp_server_addr)
+    print("udp socket:",udp_server)
+    print("type of udp socket:",type(udp_server))
     print('Bind UDP on %d...' % nt.UDP_PORT_S)
     while True:
         data, addr = udp_server.recvfrom(1024)
