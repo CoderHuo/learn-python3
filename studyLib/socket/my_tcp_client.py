@@ -3,23 +3,23 @@
 
 import socket
 import time
+from network_setting import *
 
 __author__ = 'Mr.Huo'
+buff_size = 2048
 
 
 def main():
-    server_addr = ('146.11.22.150', 20000)
     client = socket.socket()
-    client.connect(server_addr)
-    send_data1 = [b'1aheuo\r\n', b'2ashxao\r\n', b'3bhaua\r\n']
+    client.connect(TcpSerAddr)
+    send_data1 = [b'111111', b'2ashxao\r\n', b'3bhaua\r\n']
     print(client.getpeername())
-    while True:
-        for data in send_data1:
-            client.send(data)
-            print(client.recv(1024))
-            time.sleep(2)
+    # while True:
+    for data in send_data1:
+        client.send(data)
+        print(client.recv(buff_size))
+        time.sleep(1)
     client.close()
-    pass
 
 
 if __name__ == '__main__':
