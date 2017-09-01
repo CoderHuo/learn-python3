@@ -14,11 +14,11 @@ def main():
     client.connect(TcpSerAddr)
     send_data1 = [b'111111', b'2ashxao\r\n', b'3bhaua\r\n']
     print(client.getpeername())
-    # while True:
-    for data in send_data1:
-        client.send(data)
-        print(client.recv(buff_size))
-        time.sleep(1)
+    while True:
+        for data in send_data1:
+            client.send(data)
+            print(client.recv(1024))
+            time.sleep(1)
     client.close()
 
 

@@ -1,25 +1,27 @@
-somelist = [3,2,2,3]
+somelist = [3, 2, 2, 3]
 
-y=somelist
+y = somelist
+
 
 def delete(list):
     print(list[:])
-    print(1,id(list))
-    list[:] = [x for x in list if x !=3]
+    print(1, id(list))
+    list[:] = [x for x in list if x != 3]
 
     print(list[:])
-    print(2,id(list))
-    print("func:",list)
+    print(2, id(list))
+    print("func:", list)
 
-print(3,id(somelist))
+
+print(3, id(somelist))
 delete(somelist)
 print(somelist)
-print(4,id(somelist))
+print(4, id(somelist))
 print(y)
-somelist[0] =1
+somelist[0] = 1
 print(y)
 
-print(5,id(y))
+print(5, id(y))
 
 print(len(b'INVITE sip:bob@biloxi.com SIP/2.0\r\n'
           b'Via: SIP/2.0/UDP server10.biloxi.com;branch=z9hG4bKnashds8\r\nMax-Forwards: 70\r\n'
@@ -30,7 +32,7 @@ print(len(b'INVITE sip:bob@biloxi.com SIP/2.0\r\n'
           b'Contact: <sip:bob@192.0.2.4>\r\n'
           b'Content-Type: application/sdp\r\n'
           b'Content-Length: 0\r\n\r\n'))
-data  = b"""INVITE sip:bob@biloxi.com SIP/2.0\r
+data = b"""INVITE sip:bob@biloxi.com SIP/2.0\r
 Via: SIP/2.0/UDP server10.biloxi.com;branch=z9hG4bKnashds8\r\nMax-Forwards: 70\r
 To: Bob <sip:bob@biloxi.com>;tag=a6c85cf\r
 From: Alice <sip:alice@atlanta.com>;tag=1928301774\r
@@ -48,3 +50,29 @@ print(data[-23])
 print(type(data))
 print(bytes([x for x in range(256)]))
 print(bytes.fromhex("7b 7d"))
+
+
+class A:
+    def serve_forever(self):
+        self.A()
+
+    def A(self):
+        print('AAA')
+
+
+class B(A):
+    pass
+
+
+class C:
+    def A(self):
+        print('CCC')
+
+
+class D(C, B):
+    pass
+
+
+d = D()
+d.A()
+d.serve_forever()
