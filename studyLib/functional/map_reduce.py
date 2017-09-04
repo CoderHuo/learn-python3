@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from functools import reduce
+import re
 
 __author__ = 'Mr.Huo'
 
@@ -20,6 +21,10 @@ def statistics(dic, k):
     else:
         dic[k] += 1
     return dic
+
+
+def str2int(x, y):
+    return x * 10 + y
 
 
 def main():
@@ -47,6 +52,20 @@ def main():
     list2 = ['H', 'S', 'H']
     redu4 = reduce(statistics, list2, {})
     print(redu4)
+
+    # 将字符串的首字母大写，其他的小写
+    names = ['adam', 'LISA', 'barT']
+    b = lambda x: x[0].upper() + x[1:].lower()
+    print(b(names[2]))
+    new_names = list(map(lambda x: x[0].upper() + x[1:].lower(), names))
+    print(new_names)
+
+    # 将数字字符串转换成一个数
+    num_str = '1003750'
+    num = reduce(lambda x, y: x * 10 + y, map(int, num_str))
+    print(num, type(num))
+    num1 = reduce(lambda x, y: x / 10 + y, map(int, num_str[::-1]))
+    print(num1, type(num1))
 
 
 if __name__ == '__main__':
