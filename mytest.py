@@ -53,6 +53,9 @@ print(bytes.fromhex("7b 7d"))
 
 
 class A:
+    def __init__(self):
+        print('A__init__')
+
     def serve_forever(self):
         self.A()
 
@@ -61,15 +64,22 @@ class A:
 
 
 class B(A):
-    pass
+    def __init__(self):
+        print('B__init__ run')
 
 
 class C:
+    def __init__(self):
+        print('C__init__ run')
+
     def A(self):
         print('CCC')
 
 
 class D(C, B):
+    def __init__(self):
+        C.__init__(self)
+        B.__init__(self)
     pass
 
 
