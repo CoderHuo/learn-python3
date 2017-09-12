@@ -36,6 +36,9 @@ class Application(Frame):
         self._helloLabel = Label(self, text='Hello World')
         self._helloLabel.pack()
 
+        self._text = Text(self)
+        self._text.pack()
+
     def _resize(self, ev=None):
         self._helloLabel.config(font='Helvetica -%d bold' % self._scale.get())
 
