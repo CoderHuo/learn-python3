@@ -2,20 +2,35 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Mr.Huo'
 
+"""可变参数args，关键字参数kwargs，作为参数传递给一个可变参数args、关键字参数kwargs，
+应该使用 *args、**kwargs的形式.
+位置参数传递：可以使用列表*args(列表长度不大于参数列表)、字典**kwargs(列表长度不大于参数列表，key为位置参数)
+"""
+
 
 def menu(wine, entree, dessert):
-    '''位置参数'''
+    """位置参数"""
     return {'wine': wine, 'entree': entree, 'dessert': dessert}
 
 
 def print_args(*args):
-    '''可变参数'''
+    """可变参数"""
     print('args:', args, "\nargs's tpye is", type(args))
+    print_ag(*args)
 
 
 def print_kwargs(**kwargs):
-    '''关键字参数'''
+    """关键字参数"""
     print('kwargs:', kwargs, "\nkwargs's tpye is", type(kwargs))
+    print_kw(**kwargs)
+
+
+def print_ag(*args):
+    print('args:', args, "\nargs's tpye is", type(args))
+
+
+def print_kw(**kw):
+    print('kw:', kw, "\nkw's tpye is", type(kw))
 
 
 def knights(a, b):
@@ -99,6 +114,12 @@ def main():
     print('====================', end='\n')
     d = add_ints(1, 2, 3, 4)
     print(d)
+
+    args = [11, 12, 13]
+    print(menu(*args))
+    print(menu(110, *args[:2:]))
+    kwargs = {'wine': 111, 'entree': 112, 'dessert': 113}
+    print(menu(**kwargs))
 
 
 if __name__ == '__main__':

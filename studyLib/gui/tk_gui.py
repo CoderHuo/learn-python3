@@ -8,17 +8,18 @@ __author__ = 'Mr.Huo'
 
 
 class Application(Frame):
-    def __init__(self, master=None):
-        Frame.__init__(self, master)
-        self.winfo_screenheight()
+    def __init__(self, master=None, cnf={}, **kw):
+        super().__init__(master, cnf, **kw)
         self.pack()
-
+        self.winfo_geometry()
         self._creatWidgets()
+        # Frame如果设置大小的话，只有当使用了pack_propagate(0)或者grid_propagate(0)之后（width,height)才起作用，
+        # 而且调用前Frame要pack或者grid了
+        self.pack_propagate(0)
+        print(self.pack_slaves())
 
     def _creatWidgets(self):
         # 创建一个窗口 将其加入父容器
-        self._helloLabel = Label(self, text='Hello World')
-        self._helloLabel.pack()
 
         self._nameInput = Entry(self)
         self._nameInput.pack()
@@ -29,20 +30,28 @@ class Application(Frame):
         self._quitButton = Button(self, text='Quit', command=self.quit)
         self._quitButton.pack()
 
+        self._scale = Scale(self, orient=HORIZONTAL, command=self._resize)
+        self._scale.pack()
+
+        self._helloLabel = Label(self, text='Hello World')
+        self._helloLabel.pack()
+
+    def _resize(self, ev=None):
+        self._helloLabel.config(font='Helvetica -%d bold' % self._scale.get())
+
     def _hello(self):
         name = self._nameInput.get() or '芷瑄'
         msgbox.showinfo('Message', 'Hello %s' % name)
 
 
 def main():
-    app = Application()
-    app.master.title('少华')
+    app = Application(width=800, height=600)
+    app.master.title('Hello World')
     # 可以随时增加其他窗口等
-    app.myLabel = Label(text='少华')
+    app.myLabel = Label(text='Hello World1')
     app.myLabel.pack()
     print(app.winfo_screenheight())
-    for x in dir(app):
-        print(x, ':', app.__getattribute__(x))
+    print(app.pack_slaves())
     app.mainloop()
 
 
