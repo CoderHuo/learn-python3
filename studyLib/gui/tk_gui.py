@@ -9,7 +9,7 @@ __author__ = 'Mr.Huo'
 
 class Application(Frame):
     def __init__(self, master=None, cnf={}, **kw):
-        super().__init__(master, cnf, **kw)
+        Frame.__init__(self,master, cnf, **kw)
         self.pack()
         self.winfo_geometry()
         self._creatWidgets()
@@ -22,9 +22,11 @@ class Application(Frame):
         # 创建一个窗口 将其加入父容器
 
         self._nameInput = Entry(self)
+        print('name:',self._nameInput)
+        print('get:',self._nameInput.get())
         self._nameInput.pack()
 
-        self._helloButton = Button(self, text='Hello', command=self._hello)
+        self._helloButton = Button(self, text='Hello', height=10,width=20,command=self._hello)
         self._helloButton.pack()
 
         self._quitButton = Button(self, text='Quit', command=self.quit)

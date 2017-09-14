@@ -54,7 +54,7 @@ print(bytes.fromhex("7b 7d"))
 
 class A:
     def __init__(self):
-        print('A__init__')
+        print('A__init__run')
 
     def serve_forever(self):
         self.A()
@@ -65,24 +65,46 @@ class A:
 
 class B(A):
     def __init__(self):
-        print('B__init__ run')
+        A.__init__(self)
+        print('B__init__run')
+
+    def A(self):
+        print('BBB')
 
 
 class C:
     def __init__(self):
-        print('C__init__ run')
+        print('C__init__run')
 
     def A(self):
         print('CCC')
 
 
-class D(C, B):
-    def __init__(self):
-        C.__init__(self)
-        B.__init__(self)
+class F(B, C, A):
     pass
 
 
+class D(B,C):
+    def __init__(self):
+        C.__init__(self)
+        B.__init__(self)
+
+    pass
+
+
+class E(B, C, A):
+    def __init__(self):
+        super().__init__()
+
+
+split_str = '----------' * 3
+print(split_str)
 d = D()
+print(split_str)
 d.A()
+print(split_str)
 d.serve_forever()
+print(split_str)
+e = E()
+print(split_str)
+e.serve_forever()
