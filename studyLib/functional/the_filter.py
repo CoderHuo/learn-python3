@@ -8,7 +8,7 @@ def is_odd(x):
 
 
 def is_palindrome(n):
-    '''判断一个数是不是回数'''
+    """判断一个数是不是回数"""
     return str(n) == str(n)[::-1]
 
 
@@ -23,29 +23,27 @@ def is_palindrome(n):
 # 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...
 # 不断筛下去，就可以得到所有的素数
 def _odd_iter():
-    '''从3开始的基数序列生成器，无限'''
+    """从3开始的基数序列生成器，无限"""
     n = 1
     while True:
+        #print('_odd_iter',n)
         n += 2
-        # print('_odd_iter',n)
         yield n
 
 
 def _not_divisible(n):
-    # print('not_di',n)
     return lambda x: x % n > 0
 
 
 def primes(max=10):
-    '''素数生成器，生成不大于max的素数'''
-    n = 2
+    """素数生成器，生成不大于max的素数"""
+    n = 1
     if n <= max:
         yield n
+        yield n+1
     it = _odd_iter()  # 初始序列，3开始的基数序列
-    # print('it',it)
     while True:
-        n = it.__next__()  # 返回序列的第一个值
-        # print('HHHH',n)
+        n = next(it)  # 返回序列的第一个值
         if n <= max:
             yield n
         else:
@@ -65,7 +63,7 @@ def main():
     print("回数：", list(output))
 
     print("素数：", list(primes(100)))
-
+    print(dir(_not_divisible(3)))
 
 if __name__ == '__main__':
     main()

@@ -84,7 +84,7 @@ class F(B, C, A):
     pass
 
 
-class D(B,C):
+class D(B, C):
     def __init__(self):
         C.__init__(self)
         B.__init__(self)
@@ -108,3 +108,41 @@ print(split_str)
 e = E()
 print(split_str)
 e.serve_forever()
+
+print('-' * 100)
+i, j = 1, 100
+guess_num = int(input("Please enter a integer from 1 to 100: "))
+guess_times = int(input("Please enter the number to guess: "))
+counter = 1
+
+import random
+
+while counter <= guess_times:
+    counter += 1
+    print('I J ', i, j)
+    num = random.randint(i, j)
+    if num == guess_num:
+        print("guess right,the number is:", num)
+        break
+    elif num > guess_num:
+        print("the number(%s) is biger." % num)
+        j = num
+    elif num < guess_num:
+        print("the number(%s) is smaller." % num)
+        i = num
+    pass
+
+
+class Name:
+    name = 'huo'
+
+    def __init__(self, name=None):
+        if name is not None:
+            self.name = name
+
+        print("name", name)
+        print("self.name", self.name)
+
+
+name = Name()
+print(name.name)
