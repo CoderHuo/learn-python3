@@ -8,4 +8,6 @@
 
 class SpyPipeline(object):
     def process_item(self, item, spider):
+        item['title'] = 'hhhhhh'
+        print('pipline:', item['title'])
         return item
