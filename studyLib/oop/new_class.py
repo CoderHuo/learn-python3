@@ -21,7 +21,7 @@ class Foo():
 
     def __new__(cls, *args, **kwargs):
         print("Foo.__new__")
-        obj = object.__new__(Stranger, *args, **kwargs)
+        obj = object.__new__(Stranger, *args)
         obj.__init__(*args, **kwargs)
         return obj
 
@@ -31,9 +31,9 @@ class Stranger():
         self.name = 'Stranger'
         print("Stranger.__init__ call")
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args):
         print("Stranger.__new__")
-        return object.__new__(cls, *args, **kwargs)
+        return object.__new__(cls, *args)
 
 
 def main():
