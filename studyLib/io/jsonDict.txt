@@ -1,1 +1,91 @@
-{"huo": 3, "shao": 4, "hua": 3}
+{"job":[{
+    "publishTime": [
+        "2017-10-19"
+    ],
+    "title": [
+        "韩语社区经理"
+    ],
+    "link": "http: //hr.tencent.com/position_detail.php?id=33511&keywords=&tid=0&lid=0",
+    "recruitNumber": [
+        "1"
+    ],
+    "workLocation": [
+        "深圳"
+    ],
+    "category": [
+        "产品/项目类"
+    ]
+},
+{
+    "publishTime": [
+        "2017-10-19"
+    ],
+    "title": [
+        "16175-海外广告投放经理"
+    ],
+    "link": "http: //hr.tencent.com/position_detail.php?id=33509&keywords=&tid=0&lid=0",
+    "recruitNumber": [
+        "1"
+    ],
+    "workLocation": [
+        "深圳"
+    ],
+    "category": [
+        "市场类"
+    ]
+},
+{
+    "publishTime": [
+        "2017-10-19"
+    ],
+    "title": [
+        "18796-WeGame高级商务经理（上海）"
+    ],
+    "link": "http: //hr.tencent.com/position_detail.php?id=33512&keywords=&tid=0&lid=0",
+    "recruitNumber": [
+        "2"
+    ],
+    "workLocation": [
+        "上海"
+    ],
+    "category": [
+        "市场类"
+    ]
+},
+{
+    "publishTime": [
+        "2017-10-19"
+    ],
+    "title": [
+        "23671-短视频品类运营（北京）"
+    ],
+    "link": "http: //hr.tencent.com/position_detail.php?id=33500&keywords=&tid=0&lid=0",
+    "recruitNumber": [
+        "1"
+    ],
+    "workLocation": [
+        "北京"
+    ],
+    "category": [
+        "内容编辑类"
+    ]
+},
+{
+    "publishTime": [
+        "2017-10-19"
+    ],
+    "title": [
+        "SNG16-全民K歌后台开发研发工程师（深圳）"
+    ],
+    "link": "http: //hr.tencent.com/position_detail.php?id=33493&keywords=&tid=0&lid=0",
+    "recruitNumber": [
+        "3"
+    ],
+    "workLocation": [
+        "深圳"
+    ],
+    "category": [
+        "技术类"
+    ]
+}]
+}

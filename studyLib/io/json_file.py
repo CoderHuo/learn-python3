@@ -25,7 +25,7 @@ def main():
     try:
         json_file = open(jsonDictName, 'xt')
         json.dump(dp, json_file)
-        json_file = open(jsonDictName, 'rt')
+        json_file = open(jsonDictName, 'rt',encoding='utf-8')
         d1 = json.load(json_file)
         print("D1",d1)
     except FileExistsError:

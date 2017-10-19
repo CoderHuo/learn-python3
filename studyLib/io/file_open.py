@@ -43,6 +43,7 @@ def main():
     with open('file_open.py', encoding='UTF-8') as file_op:
         for line in file_op.readlines():
             print(line, end="")
+    print(end="\n")
 
 
 if __name__ == '__main__':

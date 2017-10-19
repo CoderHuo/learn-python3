@@ -60,6 +60,13 @@ def main():
     st1.__init__()
     print(hasattr(st1,'name'))
 
+    print("-"*30)
+    print(dir(Foo))
+    print("-"*30)
+    print(dir(foo))
+    print("-"*30)
+    print(dir(object))
+    print(object.__dict__)
 
 
 
