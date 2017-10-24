@@ -17,3 +17,4 @@ class SpyItem(Item):
     workLocation = Field()  # 工作地点
     publishTime = Field()   # 发布时间
     link = Field()          # 链接
+    hot = Field()           # hot

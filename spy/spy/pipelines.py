@@ -9,15 +9,15 @@ import json, codecs
 
 class SpyPipeline(object):
     def __init__(self):
-        self.file = codecs.open('example.json', 'w', encoding='utf-8')
-        self.count = 1
+        self.file = open('example.json', 'w', encoding='utf-8')
+        self.jobData = {"job":[]}
+        #self.job
 
     def process_item(self, item, spider):
-        print(self.count)
-        self.count +=1
-        line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        self.file.write(line)
+        self.jobData["job"].append(dict(item))
         return item
 
-    def spider_close(self, spider):
+    def close_spider(self, spider):
+        line = json.dumps(dict(self.jobData), ensure_ascii=False)
+        self.file.write(line)
         self.file.close()
