@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from spy.items import SpyItem
-from scrapy import Spider
+from scrapy import Spider, Request
 from scrapy.utils.response import get_base_url
 from urllib.parse import urljoin
 
@@ -10,6 +10,10 @@ class ExampleSpider(Spider):
     name = 'example'
     allowed_domains = ['tencent.com']
     start_urls = ['http://hr.tencent.com/position.php']
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield Request(url=url, callback=self.parse)
 
     def parse(self, response):
         base_url = get_base_url(response)

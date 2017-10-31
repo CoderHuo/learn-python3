@@ -7,11 +7,12 @@ class Fibonacci(object):
     def __init__(self, name='Fibonacci'):
         self.name = name
         self.a, self.b = 0, 1
+        self.list = []
         print('Init Class %s' % self.name)
 
     # __str__用于print()
     def __str__(self):
-        '''用于print()'''
+        """用于print()"""
         return self.name
 
     # __repr__()返回程序开发者看到的字符串，也就是说，__repr__()是为调试服务的
@@ -19,18 +20,19 @@ class Fibonacci(object):
 
     # __iter__()返回迭代对象, 同__next__()做迭代使用
     def __iter__(self):
-        print("[*]when self.a=%d,self.b=%d,__iter__ is called\n " % (self.a, self.b))
+        print("[*]when self.a=%d,self.b=%d,__iter__ is called!" % (self.a, self.b))
         return self
 
-    def __next__(self):
+    def __next__(self, stop=1000):
         self.a, self.b = self.b, self.a + self.b
-        if self.a > 100:
+        if self.a > stop:
             raise StopIteration()
+        self.list.append(self.a)
         return self.a
 
     # __getitem__()取下标操作
     def __getitem__(self, item):
-        pass
+        return self.list[item]
 
     # __getattr__()方法，动态返回一个属性
     def __getattr__(self, item):
@@ -51,7 +53,11 @@ def main():
         print(x)
     print(fi.test1)
     print(fi.test2(1, 2, name='Huo'))
-    #fi.test3
+    print(fi[::])
+    print(fi.list)
+    for x in fi:
+        print(x)
+    print(fi.list)
 
 
 if __name__ == '__main__':

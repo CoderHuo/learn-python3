@@ -6,6 +6,12 @@ __author__ = 'Mr.Huo'
 # @property  @XXX.setter 将属性的读取方法变为属性
 
 class Screen():
+    __slots__ = ('_width', '_height')
+
+    def __init__(self, width=None, height=None):
+        self._width = width
+        self._height = height
+
     @property
     def width(self):
         return self._width
