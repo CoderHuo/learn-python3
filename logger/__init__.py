@@ -4,7 +4,7 @@ import ctypes
 from multiprocessing import Queue
 from logging.handlers import QueueHandler
 
-__all__ = ['Logger', 'FileLogger']
+__all__ = ['ConsoleLogger', 'ConQueueLogger', 'FileLogger', 'ConFileLogger']
 
 
 class ConsoleColor:
@@ -142,8 +142,8 @@ class ConsoleColor:
 consoleColor = ConsoleColor()
 
 
-class Logger:
-    def __init__(self, queue, logname='streamLog', clevel=logging.DEBUG, qlevel=logging.DEBUG):
+class ConsoleLogger:
+    def __init__(self, logname='streamLog', clevel=logging.DEBUG):
         self.logger = logging.getLogger(logname)
         self.logger.setLevel(logging.DEBUG)
         self.timeFormat = '%Y-%m-%d %H:%M:%S.%d'
@@ -159,11 +159,7 @@ class Logger:
             self.__yellowFormat = consoleColor.setCmdYellow() + self.logFormat + consoleColor.resetCmdColor()
             self.__redFormat = consoleColor.setCmdRed() + self.logFormat + consoleColor.resetCmdColor()
             self.__purpleFormat = consoleColor.setCmdPurple() + self.logFormat + consoleColor.resetCmdColor()
-        self.qh = QueueHandler(queue)
-        self.qh.setFormatter(self.format)
-        self.qh.setLevel(qlevel)
         self.logger.addHandler(self.sh)
-        self.logger.addHandler(self.qh)
 
     def __setCmdGreen(self):
         if os.name == 'nt':
@@ -254,6 +250,24 @@ class Logger:
         self.__resetCmd()
 
 
+class ConQueueLogger(ConsoleLogger):
+    def __init__(self, queue, logname='streamLog', clevel=logging.DEBUG, qlevel=logging.DEBUG):
+        super().__init__(logname=logname, clevel=clevel)
+        self.qh = QueueHandler(queue)
+        self.qh.setFormatter(self.format)
+        self.qh.setLevel(qlevel)
+        self.logger.addHandler(self.qh)
+
+
+class ConFileLogger(ConsoleLogger):
+    def __init__(self, file, logname='streamLog', clevel=logging.DEBUG, flevel=logging.DEBUG):
+        super().__init__(logname=logname, clevel=clevel)
+        self.fh = logging.FileHandler(file)
+        self.fh.setFormatter(self.format)
+        self.fh.setLevel(flevel)
+        self.logger.addHandler(self.fh)
+
+
 class FileLogger:
 
     def __init__(self, path, logname='QueueFile', level=logging.DEBUG):
@@ -280,7 +294,7 @@ class FileLogger:
 
 if __name__ == '__main__':
     queue = Queue()
-    logyyx = Logger(queue, 'main')
+    logyyx = ConFileLogger('yxy.log')
     logyyx.debug('debug')
     logyyx.info('info')
     logyyx.warning('warning')
