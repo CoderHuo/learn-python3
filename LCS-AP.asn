@@ -1,0 +1,1210 @@
+-- **************************************************************
+--
+-- Elementary Procedure definitions
+--
+-- **************************************************************
+
+LCS-AP-PDU-Descriptions {
+    itu-t(0)
+    identified-organization(4)
+    etsi(0) mobileDomain(0)
+    eps-Access(21)
+    modules(3)
+    lcs-AP(4)
+    version1(1)
+    lcs-AP-PDU-Descriptions(0)
+}
+
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+    -- **************************************************************
+    --
+    -- IE parameter types from other modules.
+    --
+    -- **************************************************************
+
+    IMPORTS
+    Criticality, ProcedureCode
+    FROM LCS-AP-CommonDataTypes
+
+    Location-Request,
+    Location-Response,
+    Location-Abort-Request,
+    Connection-Oriented-Information,
+    Connectionless-Information,
+    Reset-Request, Reset-Acknowledge,
+    Ciphering-Key-Data,
+    Ciphering-Key-Data-Result
+    FROM LCS-AP-PDU-Contents
+
+    id-Location-Service-Request,
+    id-Connection-Oriented-Information-Transfer,
+    id-Connectionless-Information-Transfer,
+    id-Location-Abort,
+    id-Reset,
+    id-Ciphering-Key-Data
+    FROM LCS-AP-Constants;
+
+    -- **************************************************************
+    --
+    -- Interface Elementary Procedure Class
+    --
+    -- **************************************************************
+
+    LCS-AP-ELEMENTARY-PROCEDURE ::= CLASS {
+        &InitiatingMessage   ,
+        &SuccessfulOutcome   OPTIONAL,
+        &UnsuccessfulOutcome OPTIONAL,
+        &procedureCode       ProcedureCode UNIQUE,
+        &criticality         Criticality DEFAULT ignore
+    }
+    WITH SYNTAX {
+        INITIATING MESSAGE    &InitiatingMessage
+        [SUCCESSFUL OUTCOME   &SuccessfulOutcome]
+        [UNSUCCESSFUL OUTCOME &UnsuccessfulOutcome]
+        PROCEDURE CODE        &procedureCode
+        [CRITICALITY          &criticality]
+    }
+
+    -- **************************************************************
+    --
+    -- Interface PDU Definition
+    --
+    -- **************************************************************
+
+    LCS-AP-PDU ::= CHOICE {
+        initiatingMessage InitiatingMessage,
+        successfulOutcome SuccessfulOutcome,
+        unsuccessfulOutcome UnsuccessfulOutcome,
+        ...
+    }
+
+    InitiatingMessage ::= SEQUENCE {
+        procedureCode LCS-AP-ELEMENTARY-PROCEDURE.&procedureCode ( { LCS-AP-ELEMENTARY-PROCEDURES } ),
+        criticality LCS-AP-ELEMENTARY-PROCEDURE.&criticality ( { LCS-AP-ELEMENTARY-PROCEDURES } { @procedureCode }),
+        value LCS-AP-ELEMENTARY-PROCEDURE.&InitiatingMessage ( { LCS-AP-ELEMENTARY-PROCEDURES } { @procedureCode })
+    }
+
+    SuccessfulOutcome ::= SEQUENCE {
+        procedureCode LCS-AP-ELEMENTARY-PROCEDURE.&procedureCode ( { LCS-AP-ELEMENTARY-PROCEDURES } ),
+        criticality LCS-AP-ELEMENTARY-PROCEDURE.&criticality ( { LCS-AP-ELEMENTARY-PROCEDURES } { @procedureCode }),
+        value LCS-AP-ELEMENTARY-PROCEDURE.&SuccessfulOutcome ( { LCS-AP-ELEMENTARY-PROCEDURES } { @procedureCode })
+    }
+
+    UnsuccessfulOutcome ::= SEQUENCE {
+        procedureCode LCS-AP-ELEMENTARY-PROCEDURE.&procedureCode ( { LCS-AP-ELEMENTARY-PROCEDURES } ),
+        criticality LCS-AP-ELEMENTARY-PROCEDURE.&criticality ( { LCS-AP-ELEMENTARY-PROCEDURES } { @procedureCode }),
+        value LCS-AP-ELEMENTARY-PROCEDURE.&UnsuccessfulOutcome ( { LCS-AP-ELEMENTARY-PROCEDURES } { @procedureCode })
+    }
+
+    -- **************************************************************
+    --
+    -- Interface Elementary Procedure List
+    --
+    -- **************************************************************
+
+    LCS-AP-ELEMENTARY-PROCEDURES LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        LCS-AP-ELEMENTARY-PROCEDURES-CLASS-1|
+        LCS-AP-ELEMENTARY-PROCEDURES-CLASS-2,
+        ...
+    }
+
+    LCS-AP-ELEMENTARY-PROCEDURES-CLASS-1 LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        location-Service-Request|
+        connectionless-Information-Transfer|
+        location-Abort|
+        reset|
+        ciphering-Key-Data,
+        ...
+    }
+
+    LCS-AP-ELEMENTARY-PROCEDURES-CLASS-2 LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        connection-Oriented-Information-Transfer,
+        ...
+    }
+
+    -- **************************************************************
+    --
+    -- Interface Elementary Procedures
+    --
+    -- **************************************************************
+
+    location-Service-Request LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        INITIATING MESSAGE Location-Request
+        SUCCESSFUL OUTCOME Location-Response
+        UNSUCCESSFUL OUTCOME Location-Response
+        PROCEDURE CODE id-Location-Service-Request
+        CRITICALITY reject
+    }
+
+    connection-Oriented-Information-Transfer LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        INITIATING MESSAGE Connection-Oriented-Information
+        PROCEDURE CODE id-Connection-Oriented-Information-Transfer
+        CRITICALITY reject
+    }
+
+    connectionless-Information-Transfer LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        INITIATING MESSAGE Connectionless-Information
+        UNSUCCESSFUL OUTCOME Connectionless-Information
+        PROCEDURE CODE id-Connectionless-Information-Transfer
+        CRITICALITY reject
+    }
+
+    location-Abort LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        INITIATING MESSAGE Location-Abort-Request
+        SUCCESSFUL OUTCOME Location-Response
+        PROCEDURE CODE id-Location-Abort
+        CRITICALITY reject
+    }
+
+    reset LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        INITIATING MESSAGE Reset-Request
+        SUCCESSFUL OUTCOME Reset-Acknowledge
+        PROCEDURE CODE id-Reset
+        CRITICALITY reject
+    }
+
+    ciphering-Key-Data LCS-AP-ELEMENTARY-PROCEDURE ::= {
+        INITIATING MESSAGE Ciphering-Key-Data
+        SUCCESSFUL OUTCOME Ciphering-Key-Data-Result
+        UNSUCCESSFUL OUTCOME Ciphering-Key-Data-Result
+        PROCEDURE CODE id-Ciphering-Key-Data
+        CRITICALITY reject
+    }
+
+END
+
+-- **************************************************************
+--
+-- PDU definitions for LCS-AP.
+--
+-- **************************************************************
+LCS-AP-PDU-Contents {
+    itu-t(0)
+    identified-organization(4)
+    etsi(0)
+    mobileDomain(0)
+    eps-Access(21)
+    modules(3)
+    lcs-AP(4)
+    version1(1)
+    lcs-AP-PDU-Contents(1)
+}
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+    -- **************************************************************
+    --
+    -- IE parameter types from other modules.
+    --
+    -- **************************************************************
+    IMPORTS
+    APDU,
+    Accuracy-Fulfillment-Indicator,
+    Barometric-Pressure,
+    Cell-Portion-ID,
+    Ciphering-Data,
+    Ciphering-Data-Ack,
+    Ciphering-Data-Error-Report,
+    Civic-Address,
+    Correlation-ID,
+    Coverage-Level,
+    E-CGI,
+    Geographical-Area,
+    IMSI,
+    IMEI,
+    Include-Velocity,
+    LCS-Cause,
+    LCS-Client-Type,
+    LCS-Service-Type-ID,
+    LCS-Priority,
+    LCS-QoS,
+    Location-Type,
+    MultipleAPDUs,
+    Network-Element,
+    Payload-Type,
+    Positioning-Data,
+    RAT-Type,
+    Return-Error-Type,
+    Return-Error-Cause,
+    UE-Positioning-Capability,
+    Velocity-Estimate
+    FROM LCS-AP-IEs
+
+    ProtocolExtensionContainer { } ,
+    ProtocolIE-Container { },
+    LCS-AP-PROTOCOL-EXTENSION,
+    LCS-AP-PROTOCOL-IES
+    FROM LCS-AP-Containers
+
+    id-Accuracy-Fulfillment-Indicator,
+    id-APDU,
+    id-Barometric-Pressure,
+    id-Cell-Portion-ID,
+    id-Ciphering-Data,
+    id-Ciphering-Data-Ack,
+    id-Ciphering-Data-Error-Report,
+    id-Civic-Address,
+    id-Correlation-ID,
+    id-Coverage-Level,
+    id-Destination-ID,
+    id-E-UTRAN-Cell-Identifier,
+    id-Include-Velocity,
+    id-IMEI,
+    id-IMSI,
+    id-LCS-Client-Type,
+    id-LCS-Priority,
+    id-LCS-QOS,
+    id-LCS-Cause,
+    id-LCS-Service-Type-ID,
+    id-Location-Estimate,
+    id-Location-Type,
+    id-MultipleAPDUs,
+    id-Payload-Type,
+    id-Positioning-Data,
+    id-RAT-Type,
+    id-Return-Error-Request,
+    id-Return-Error-Cause,
+    id-Source-Identity,
+    id-UE-Positioning-Capability,
+    id-Velocity-Estimate
+    FROM LCS-AP-Constants;
+
+    -- **************************************************************
+    --
+    -- Location-Request
+    --
+    -- **************************************************************
+    Location-Request ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Location-Request-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Location-Request-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Location-Request-IEs LCS-AP-PROTOCOL-IES ::= {
+        { ID id-Correlation-ID CRITICALITY reject TYPE Correlation-ID PRESENCE mandatory } |
+        { ID id-Location-Type CRITICALITY reject TYPE Location-Type PRESENCE mandatory }|
+        { ID id-E-UTRAN-Cell-Identifier CRITICALITY ignore TYPE E-CGI PRESENCE mandatory }|
+        { ID id-LCS-Client-Type CRITICALITY reject TYPE LCS-Client-Type PRESENCE optional }|
+        { ID id-LCS-Priority CRITICALITY reject TYPE LCS-Priority PRESENCE optional }|
+        { ID id-LCS-QOS CRITICALITY reject TYPE LCS-QoS PRESENCE optional }|
+        { ID id-UE-Positioning-Capability CRITICALITY reject TYPE UE-Positioning-Capability PRESENCE optional }|
+        { ID id-Include-Velocity CRITICALITY reject TYPE Include-Velocity PRESENCE optional }|
+        { ID id-IMSI CRITICALITY ignore TYPE IMSI PRESENCE optional }|
+        { ID id-IMEI CRITICALITY ignore TYPE IMEI PRESENCE optional }|
+        { ID id-MultipleAPDUs CRITICALITY reject TYPE MultipleAPDUs PRESENCE optional }|
+        { ID id-RAT-Type CRITICALITY ignore TYPE RAT-Type PRESENCE optional }|
+        { ID id-Coverage-Level CRITICALITY ignore TYPE Coverage-Level PRESENCE optional },
+        ...
+    }
+
+    Location-Request-Extensions LCS-AP-PROTOCOL-EXTENSION ::= {
+        { ID id-LCS-Service-Type-ID CRITICALITY ignore EXTENSION LCS-Service-Type-ID PRESENCE optional } ,
+        ...
+    }
+
+    -- **************************************************************
+    --
+    -- Location-Response
+    --
+    -- **************************************************************
+    Location-Response ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Location-Response-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Location-Response-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Location-Response-IEs LCS-AP-PROTOCOL-IES ::= {
+        { ID id-Correlation-ID CRITICALITY reject TYPE Correlation-ID PRESENCE mandatory } |
+        { ID id-Location-Estimate CRITICALITY reject TYPE Geographical-Area PRESENCE optional }|
+        { ID id-Positioning-Data CRITICALITY reject TYPE Positioning-Data PRESENCE optional }|
+        { ID id-Velocity-Estimate CRITICALITY reject TYPE Velocity-Estimate PRESENCE optional }|
+        { ID id-Accuracy-Fulfillment-Indicator CRITICALITY reject TYPE Accuracy-Fulfillment-Indicator PRESENCE optional }|
+        { ID id-LCS-Cause CRITICALITY ignore TYPE LCS-Cause PRESENCE optional },
+        ...
+    }
+
+    Location-Response-Extensions LCS-AP-PROTOCOL-EXTENSION ::= {
+        { ID id-E-UTRAN-Cell-Identifier CRITICALITY ignore EXTENSION E-CGI PRESENCE optional } |
+        { ID id-Cell-Portion-ID CRITICALITY ignore EXTENSION Cell-Portion-ID PRESENCE optional }|
+        { ID id-Civic-Address CRITICALITY ignore EXTENSION Civic-Address PRESENCE optional }|
+        { ID id-Barometric-Pressure CRITICALITY ignore EXTENSION Barometric-Pressure PRESENCE optional }|
+        { ID id-Coverage-Level CRITICALITY ignore EXTENSION Coverage-Level PRESENCE optional },
+        ...
+    }
+
+    -- **************************************************************
+    --
+    -- Location-Abort
+    --
+    -- **************************************************************
+    Location-Abort-Request ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Location-Abort-Request-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Location-Abort-Request-Extensions } } OPTIONAL
+    }
+
+    Location-Abort-Request-IEs LCS-AP-PROTOCOL-IES ::= {
+        { ID id-Correlation-ID CRITICALITY reject TYPE Correlation-ID PRESENCE mandatory } |
+        { ID id-LCS-Cause CRITICALITY ignore TYPE LCS-Cause PRESENCE mandatory },
+        ...
+    }
+
+    Location-Abort-Request-Extensions LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    -- **************************************************************
+    --
+    -- Connection-Oriented-Information
+    --
+    -- **************************************************************
+    Connection-Oriented-Information ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Connection-Oriented-Information-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Connection-Oriented-Information-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Connection-Oriented-Information-IEs LCS-AP-PROTOCOL-IES ::= {
+        { ID id-Correlation-ID CRITICALITY reject TYPE Correlation-ID PRESENCE optional } |
+        { ID id-Payload-Type CRITICALITY reject TYPE Payload-Type PRESENCE optional }|
+        { ID id-APDU CRITICALITY reject TYPE APDU PRESENCE optional },
+        ...
+    }
+
+    Connection-Oriented-Information-Extensions LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    -- **************************************************************
+    --
+    -- Connectionless-Information
+    --
+    -- **************************************************************
+    Connectionless-Information ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Connectionless-Information-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Connectionless-Information-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Connectionless-Information-IEs LCS-AP-PROTOCOL-IES ::= {
+        { ID id-Source-Identity CRITICALITY reject TYPE Network-Element PRESENCE mandatory } |
+        { ID id-Destination-ID CRITICALITY reject TYPE Network-Element PRESENCE mandatory }|
+        { ID id-APDU CRITICALITY reject TYPE APDU PRESENCE mandatory }|
+        { ID id-Return-Error-Request CRITICALITY reject TYPE Return-Error-Type PRESENCE optional }|
+        { ID id-Return-Error-Cause CRITICALITY ignore TYPE Return-Error-Cause PRESENCE optional },
+        ...
+    }
+
+    Connectionless-Information-Extensions LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    -- **************************************************************
+    --
+    -- Reset-Request
+    --
+    -- **************************************************************
+    Reset-Request ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Reset-Request-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Reset-Request-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Reset-Request-IEs LCS-AP-PROTOCOL-IES ::= { { ID id-LCS-Cause CRITICALITY ignore TYPE LCS-Cause PRESENCE mandatory } , ... }
+
+    Reset-Request-Extensions LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    -- **************************************************************
+    --
+    -- Reset-Acknowledge
+    --
+    -- **************************************************************
+    Reset-Acknowledge ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Reset-Acknowledge-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Reset-Acknowledge-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Reset-Acknowledge-IEs LCS-AP-PROTOCOL-IES ::= { ... }
+
+    Reset-Acknowledge-Extensions LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    -- **************************************************************
+    --
+    -- Ciphering-Key-Data
+    --
+    -- **************************************************************
+    Ciphering-Key-Data ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Ciphering-Key-Data-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Ciphering-Key-Data-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Ciphering-Key-Data-IEs LCS-AP-PROTOCOL-IES ::= {
+        { ID id-Ciphering-Data CRITICALITY reject TYPE Ciphering-Data PRESENCE mandatory } ,
+        ...
+    }
+
+    Ciphering-Key-Data-Extensions LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    -- **************************************************************
+    --
+    -- Ciphering-Key-Data
+    --
+    -- **************************************************************
+    Ciphering-Key-Data-Result ::= SEQUENCE {
+        protocolIEs ProtocolIE-Container { { Ciphering-Key-Data-Result-IEs } },
+        protocolExtensions ProtocolExtensionContainer { { Ciphering-Key-Data-Result-Extensions } } OPTIONAL,
+        ...
+    }
+
+    Ciphering-Key-Data-Result-IEs LCS-AP-PROTOCOL-IES ::= {
+        { ID id-Ciphering-Data-Ack CRITICALITY reject TYPE Ciphering-Data-Ack PRESENCE conditional } |
+        { ID id-Ciphering-Data-Error-Report CRITICALITY reject TYPE Ciphering-Data-Error-Report PRESENCE conditional },
+        ...
+    }
+
+    Ciphering-Key-Data-Result-Extensions LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+END
+
+-- **************************************************************
+--
+-- Information Element Definitions
+--
+-- **************************************************************
+LCS-AP-IEs {
+    itu-t(0)
+    identified-organization(4)
+    etsi(0)
+    mobileDomain(0)
+    eps-Access(21)
+    modules(3)
+    lcs-AP(4)
+    version1(1)
+    lcs-AP-IEs(2)
+}
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+IMPORTS
+    max-No-Of-Points,
+    max-Set,
+    max-GNSS-Set,
+    max-Add-Pos-Set,
+    max-Cipher-Set,
+    id-Additional-PositioningDataSet
+    FROM LCS-AP-Constants
+
+    Criticality,
+    ProcedureCode,
+    TriggeringMessage,
+    ProtocolIE-ID
+    FROM LCS-AP-CommonDataTypes
+
+    ProtocolExtensionContainer { } ,
+    LCS-AP-PROTOCOL-EXTENSION
+    FROM LCS-AP-Containers;
+
+    -- A
+    APDU ::= OCTET STRING
+
+    Accuracy-Fulfillment-Indicator ::= ENUMERATED { requested-accuracy-fulfilled, requested-accuracy-not-fulfilled, ... }
+
+    Additional-PositioningDataSet ::= SEQUENCE (SIZE (1..max-Add-Pos-Set)) OF Additional-PositioningMethodAndUsage
+
+    Additional-PositioningMethodAndUsage ::= OCTET STRING (SIZE (1))
+
+    Altitude ::= INTEGER (0..65535)
+
+    -- The valid value for this IE is 0 to 32767.
+    -- Reception of value greater than 32767 shall be mapped to the value 32767.
+    Altitude-And-Direction ::= SEQUENCE {
+        direction-Of-Altitude Direction-Of-Altitude,
+        altitude Altitude,
+        ...
+    }
+
+    Angle ::= INTEGER (0..179)
+
+    -- B
+    Barometric-Pressure ::= INTEGER (30000..115000)
+
+    Bearing ::= INTEGER (0..359)
+
+    -- C
+    C0 ::= BIT STRING (SIZE (1..128))
+
+    CellIdentity ::= BIT STRING (SIZE (28))
+
+    Cell-Portion-ID ::= INTEGER (0..255, ..., 256..4095)
+
+    Ciphering-Data ::= SEQUENCE (SIZE (1..max-Cipher-Set)) OF Ciphering-Data-Set
+
+    Ciphering-Data-Ack ::= SEQUENCE (SIZE (1..max-Cipher-Set)) OF Ciphering-Set-ID
+
+    Ciphering-Data-Error-Report ::= SEQUENCE (SIZE (1..max-Cipher-Set)) OF Ciphering-Data-Error-Report-Contents
+
+    Ciphering-Data-Set ::= SEQUENCE {
+        ciphering-Set-ID Ciphering-Set-ID,
+        ciphering-Key Ciphering-Key,
+        c0 C0,
+        sib-Types SIB-Types,
+        validity-Start-Time Validity-Start-Time,
+        validity-Duration Validity-Duration,
+        tais-List TAIs-List,
+        ...
+    }
+
+    Ciphering-Data-Error-Report-Contents ::= SEQUENCE {
+        ciphering-Set-ID Ciphering-Set-ID,
+        storage-Outcome Storage-Outcome,
+        ...
+    }
+
+    Ciphering-Set-ID ::= INTEGER (0..65535)
+
+    Ciphering-Key ::= OCTET STRING (SIZE (16))
+
+    Civic-Address ::= OCTET STRING
+
+    Confidence ::= INTEGER (0..100)
+
+    Correlation-ID ::= OCTET STRING (SIZE (4))
+
+    -- D
+    DegreesLatitude ::= INTEGER (0..8388607) -- 23 bit field
+    DegreesLongitude ::= INTEGER (-8388608..8388607) -- 24 bit field
+    Direction-Of-Altitude ::= ENUMERATED { height, depth }
+
+    -- E
+    E-CGI ::= SEQUENCE {
+        pLMNidentity PLMN-ID,
+        cell-ID CellIdentity,
+        iE-Extensions ProtocolExtensionContainer { { E-CGI-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    E-CGI-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Coverage-Level ::= ENUMERATED { extendedcoverage, ... }
+
+    Ellipsoid-Point-With-Uncertainty-Ellipse ::= SEQUENCE {
+        geographical-Coordinates Geographical-Coordinates,
+        uncertainty-Ellipse Uncertainty-Ellipse,
+        confidence Confidence,
+        iE-Extensions ProtocolExtensionContainer { { Ellipsoid-Point-With-Uncertainty-Ellipse-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Ellipsoid-Point-With-Uncertainty-Ellipse-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Ellipsoid-Point-With-Altitude ::= SEQUENCE {
+        geographical-Coordinates Geographical-Coordinates,
+        altitude-And-Direction Altitude-And-Direction,
+        iE-Extensions ProtocolExtensionContainer { { Ellipsoid-Point-With-Altitude-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Ellipsoid-Point-With-Altitude-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Ellipsoid-Point-With-Altitude-And-Uncertainty-Ellipsoid ::= SEQUENCE {
+        geographical-Coordinates Geographical-Coordinates,
+        altitude-And-Direction Altitude-And-Direction,
+        uncertainty-Ellipse Uncertainty-Ellipse,
+        uncertainty-Altitude Uncertainty-Altitude,
+        confidence Confidence,
+        iE-Extensions ProtocolExtensionContainer { { Ellipsoid-Point-With-Altitude-And-Uncertainty-Ellipsoid-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Ellipsoid-Point-With-Altitude-And-Uncertainty-Ellipsoid-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Ellipsoid-Arc ::= SEQUENCE {
+        geographical-Coordinates Geographical-Coordinates,
+        inner-Radius Inner-Radius,
+        uncertainty-Radius Uncertainty-Code,
+        offset-Angle Angle,
+        included-Angle Angle,
+        confidence Confidence,
+        iE-Extensions ProtocolExtensionContainer { { Ellipsoid-Arc-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Ellipsoid-Arc-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    ENB-ID ::= CHOICE {
+        macro-eNB-ID Macro-eNB-ID,
+        home-eNB-ID Home-eNB-ID,
+        ...,
+        short-macro-eNB-ID Short-Macro-eNB-ID,
+        long-macro-eNB-ID Long-Macro-eNB-ID
+    }
+
+    E-SMLC-ID ::= INTEGER (0..255)
+
+    -- F
+    -- G
+
+    Geographical-Area ::= CHOICE {
+        point Point,
+        point-With-Uncertainty Point-With-Uncertainty,
+        ellipsoidPoint-With-Uncertainty-Ellipse Ellipsoid-Point-With-Uncertainty-Ellipse,
+        polygon Polygon,
+        ellipsoid-Point-With-Altitude Ellipsoid-Point-With-Altitude,
+        ellipsoid-Point-With-Altitude-And-Uncertainty-Ellipsoid Ellipsoid-Point-With-Altitude-And-Uncertainty-Ellipsoid,
+        ellipsoid-Arc Ellipsoid-Arc,
+        ...
+    }
+
+    Geographical-Coordinates ::= SEQUENCE {
+        latitudeSign LatitudeSign,
+        degreesLatitude DegreesLatitude,
+        degreesLongitude DegreesLongitude,
+        iE-Extensions ProtocolExtensionContainer { { Geographical-Coordinates-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Geographical-Coordinates-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Global-eNB-ID ::= SEQUENCE {
+        pLMN-ID PLMN-ID,
+        eNB-ID ENB-ID
+    }
+
+    GNSS-Positioning-Method-And-Usage ::= OCTET STRING (SIZE (1))
+
+    GNSS-Positioning-Data-Set ::= SEQUENCE (SIZE (1..max-GNSS-Set)) OF GNSS-Positioning-Method-And-Usage
+
+    -- H
+    Home-eNB-ID ::= BIT STRING (SIZE (28))
+
+    Horizontal-Accuracy ::= INTEGER (0..127)
+
+    Horizontal-Speed-And-Bearing ::= SEQUENCE {
+        bearing INTEGER (0..359),
+        horizontal-Speed INTEGER (0..2047)
+    }
+
+    Horizontal-Velocity ::= SEQUENCE {
+        horizontal-Speed-And-Bearing Horizontal-Speed-And-Bearing,
+        iE-Extensions ProtocolExtensionContainer { { Horizontal-Velocity-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Horizontal-Velocity-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Horizontal-With-Vertical-Velocity ::= SEQUENCE {
+        horizontal-Speed-And-Bearing Horizontal-Speed-And-Bearing,
+        vertical-Velocity Vertical-Velocity,
+        iE-Extensions ProtocolExtensionContainer { { Horizontal-With-Vertical-Velocity-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Horizontal-With-Vertical-Velocity-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Horizontal-Velocity-With-Uncertainty ::= SEQUENCE {
+        horizontal-Speed-And-Bearing Horizontal-Speed-And-Bearing,
+        uncertainty-Speed INTEGER (0..255),
+        iE-Extensions ProtocolExtensionContainer { { Horizontal-Velocity-With-Uncertainty-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Horizontal-Velocity-With-Uncertainty-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Horizontal-With-Vertical-Velocity-And-Uncertainty ::= SEQUENCE {
+        horizontal-Speed-And-Bearing Horizontal-Speed-And-Bearing,
+        vertical-Velocity Vertical-Velocity,
+        horizontal-Uncertainty-Speed INTEGER (0..255),
+        vertical-Uncertainty-Speed INTEGER (0..255),
+        iE-Extensions ProtocolExtensionContainer { { Horizontal-With-Vertical-Velocity-And-Uncertainty-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Horizontal-With-Vertical-Velocity-And-Uncertainty-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    -- I
+    IMSI ::= OCTET STRING (SIZE (3..8))
+
+    IMEI ::= OCTET STRING (SIZE (8))
+
+    Include-Velocity ::= ENUMERATED { requested, not-Requested, ... }
+
+    Inner-Radius ::= INTEGER (0..65535)
+
+    -- 16 bit field
+    -- J
+    -- K
+    -- L
+    LatitudeSign ::= ENUMERATED { north, south }
+
+    Location-Type ::= ENUMERATED { geographic-Information, assistance-Information, ..., last-known-location }
+
+    LCS-Cause ::= CHOICE {
+        radio-Network-Layer Radio-Network-Layer-Cause,
+        transport-Layer Transport-Layer-Cause,
+        protocol Protocol-Cause,
+        misc Misc-Cause
+    }
+
+    LCS-Client-Type ::= ENUMERATED {
+        emergency-Services,
+        value-Added-Services,
+        pLMN-Operator-Services,
+        lawful-Intercept-Services,
+        pLMN-Operator-broadcast-Services,
+        pLMN-Operator-OM,
+        pLMN-Operator-Anonymous-Statistics,
+        pLMN-Operator-Target-MS-Service-Support,
+        ...
+    }
+
+    LCS-Priority ::= OCTET STRING (SIZE (1))
+
+    LCS-QoS ::= SEQUENCE {
+        horizontal-Accuracy Horizontal-Accuracy OPTIONAL,
+        vertical-Requested Vertical-Requested OPTIONAL,
+        vertical-Accuracy Vertical-Accuracy OPTIONAL,
+        response-Time Response-Time OPTIONAL,
+        ...
+    }
+
+    LCS-Service-Type-ID ::= INTEGER (0..127)
+
+    Long-Macro-eNB-ID ::= BIT STRING (SIZE (21))
+
+    -- M
+    Macro-eNB-ID ::= BIT STRING (SIZE (20))
+
+    Message-Identifier ::= BIT STRING (SIZE (16))
+
+    Misc-Cause ::= ENUMERATED {
+        processing-Overload,
+        hardware-Failure,
+        o-And-M-Intervention,
+        ciphering-key-data-lost,
+        unspecified,
+        ...
+    }
+
+    MultipleAPDUs ::= SEQUENCE (SIZE (1..3)) OF APDU
+
+    -- N
+
+    Network-Element ::= CHOICE {
+        global-eNB-ID Global-eNB-ID,
+        e-SMLC-ID E-SMLC-ID
+    }
+
+    -- O
+    Orientation-Major-Axis ::= INTEGER (0..89)
+
+    -- P
+    Payload-Type ::= ENUMERATED { lPP, lPPa, ... }
+
+    PLMN-ID ::= TBCD-STRING
+
+    Point ::= SEQUENCE {
+        geographical-Coordinates Geographical-Coordinates,
+        iE-Extensions ProtocolExtensionContainer { { Point-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Point-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Point-With-Uncertainty ::= SEQUENCE {
+        geographical-Coordinates Geographical-Coordinates,
+        uncertainty-Code Uncertainty-Code,
+        iE-Extensions ProtocolExtensionContainer { { Point-With-Uncertainty-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Point-With-Uncertainty-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Polygon ::= SEQUENCE (SIZE (1..max-No-Of-Points)) OF Polygon-Point
+
+    Polygon-Point ::= SEQUENCE {
+        geographical-Coordinates Geographical-Coordinates,
+        iE-Extensions ProtocolExtensionContainer { { Polygon-Point-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+    Polygon-Point-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= { ... }
+
+    Positioning-Data ::= SEQUENCE {
+        positioning-Data-Set Positioning-Data-Set OPTIONAL,
+        gNSS-Positioning-Data-Set GNSS-Positioning-Data-Set OPTIONAL,
+        iE-Extensions ProtocolExtensionContainer { { Positioning-Data-ExtIEs } } OPTIONAL,
+        ...
+    }
+
+
+    Positioning-Data-ExtIEs LCS-AP-PROTOCOL-EXTENSION ::= {
+        { ID id-Additional-PositioningDataSet CRITICALITY ignore EXTENSION Additional-PositioningDataSet PRESENCE optional },
+        ...
+    }
+
+
+    Positioning-Data-Set ::= SEQUENCE (SIZE (1..max-Set)) OF Positioning-Method-And-Usage
+
+    Positioning-Method-And-Usage ::= OCTET STRING (SIZE (1))
+
+    Protocol-Cause ::= ENUMERATED {
+        transfer-Syntax-Error,
+        abstract-Syntax-Error-Reject,
+        abstract-Syntax-Error-Ignore-And-Notify,
+        message-Not-Compatible-With-Receiver-State,
+        semantic-Error,
+        unspecified,
+        abstract-Syntax-Error,
+        ...
+    }
+
+    -- Q
+    -- R
+    Radio-Network-Layer-Cause ::= ENUMERATED { unspecified, ... }
+
+    RAT-Type ::= ENUMERATED { lte-wb, nb-iot, ... }
+
+    Response-Time ::= ENUMERATED { low-Delay(0), delay-Tolerant(1), ... }
+
+    Return-Error-Type ::= ENUMERATED { yes, no }
+
+    Return-Error-Cause ::= ENUMERATED {
+        system-Failure,
+        protocol-Error,
+        destination-Unknown,
+        destination-Unreachable,
+        congestion,
+        ...
+    }
+
+    -- S
+    Short-Macro-eNB-ID ::= BIT STRING (SIZE (18))
+
+    SIB-Types ::= OCTET STRING (SIZE (4))
+
+    Storage-Outcome ::= ENUMERATED { successful, failed }
+
+    -- T
+    TAIs-List ::= OCTET STRING (SIZE (7..97))
+
+    TBCD-STRING ::= OCTET STRING (SIZE (3))
+
+    Transport-Layer-Cause ::= ENUMERATED { tranport-Resource-Unavailable, unspecified, ... }
+
+    -- U
+    Uncertainty-Altitude ::= INTEGER (0..127)
+
+    Uncertainty-Code ::= INTEGER (0..127)
+
+    Uncertainty-Ellipse ::= SEQUENCE {
+        uncertainty-SemiMajor Uncertainty-Code,
+        uncertainty-SemiMinor Uncertainty-Code,
+        orientation-Major-Axis Orientation-Major-Axis
+    }
+
+    UE-Positioning-Capability ::= SEQUENCE {
+        lPP BOOLEAN,
+        ...
+    }
+
+    -- V
+    Validity-Duration ::= INTEGER (0..65535)
+
+    Validity-Start-Time ::= OCTET STRING (SIZE (4))
+
+    Velocity-Estimate ::= CHOICE {
+        horizontal-Velocity Horizontal-Velocity,
+        horizontal-With-Vertical-Velocity Horizontal-With-Vertical-Velocity,
+        horizontal-Velocity-With-Uncertainty Horizontal-Velocity-With-Uncertainty,
+        horizontal-With-Vertical-Velocity-And-Uncertainty Horizontal-With-Vertical-Velocity-And-Uncertainty,
+        ...
+    }
+
+    Vertical-Requested ::= ENUMERATED { vertical-coordinate-Is-Not-Requested(0), vertical-coordinate-Is-Requested(1) }
+
+    Vertical-Accuracy ::= INTEGER (0..127)
+
+    Vertical-Velocity ::= SEQUENCE {
+        vertical-Speed INTEGER (0..255),
+        vertical-Speed-Direction Vertical-Speed-Direction
+    }
+
+    Vertical-Speed-Direction ::= ENUMERATED { upward, downward }
+
+    -- W
+    -- X
+    -- Y
+END
+
+-- **************************************************************
+--
+-- Common definitions
+--
+-- **************************************************************
+
+LCS-AP-CommonDataTypes {
+    itu-t(0)
+    identified-organization(4)
+    etsi(0)
+    mobileDomain(0)
+    eps-Access(21)
+    modules(3) lcs-AP(4)
+    version1(1)
+    lcs-AP-CommonDataTypes(3)
+}
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+    Criticality ::= ENUMERATED { reject, ignore, notify }
+
+    Presence ::= ENUMERATED { optional, conditional, mandatory }
+
+    ProcedureCode ::= INTEGER (0..255)
+
+    ProtocolExtensionID ::= INTEGER (0..65535)
+
+    ProtocolIE-ID ::= INTEGER (0..65535)
+
+    TriggeringMessage ::= ENUMERATED { initiating-message, successful-outcome, unsuccessful-outcome, outcome }
+
+END
+
+-- **************************************************************
+--
+-- Constant definitions
+--
+-- **************************************************************
+
+LCS-AP-Constants {
+    itu-t(0)
+    identified-organization(4)
+    etsi(0)
+    mobileDomain(0)
+    eps-Access(21)
+    modules(3)
+    lcs-AP(4)
+    version1(1)
+    lcs-AP-Constants(4)
+}
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+    -- **************************************************************
+    --
+    -- Elementary Procedures
+    --
+    -- **************************************************************
+    id-Location-Service-Request INTEGER ::= 0
+
+    id-Connection-Oriented-Information-Transfer INTEGER ::= 1
+
+    id-Connectionless-Information-Transfer INTEGER ::= 2
+
+    id-Location-Abort INTEGER ::= 3
+
+    id-Reset INTEGER ::= 4
+
+    id-Ciphering-Key-Data INTEGER ::= 5
+
+    -- **************************************************************
+    --
+    -- IEs
+    --
+    -- **************************************************************
+
+    id-Accuracy-Fulfillment-Indicator INTEGER ::= 0
+
+    id-APDU INTEGER ::= 1
+
+    id-Correlation-ID INTEGER ::= 2
+
+    id-Coverage-Level INTEGER ::= 65535
+
+    id-Destination-ID INTEGER ::= 3
+
+    id-E-UTRAN-Cell-Identifier INTEGER ::= 4
+
+    id-Include-Velocity INTEGER ::= 5
+
+    id-IMEI INTEGER ::= 6
+
+    id-IMSI INTEGER ::= 7
+
+    id-LCS-Client-Type INTEGER ::= 8
+
+    id-LCS-Priority INTEGER ::= 9
+
+    id-LCS-QOS INTEGER ::= 10
+
+    id-LCS-Cause INTEGER ::= 11
+
+    id-Location-Estimate INTEGER ::= 12
+
+    id-Location-Type INTEGER ::= 13
+
+    id-MultipleAPDUs INTEGER ::= 14
+
+    id-Payload-Type INTEGER ::= 15
+
+    id-Positioning-Data INTEGER ::= 16
+
+    id-Return-Error-Request INTEGER ::= 17
+
+    id-Return-Error-Cause INTEGER ::= 18
+
+    id-Source-Identity INTEGER ::= 19
+
+    id-UE-Positioning-Capability INTEGER ::= 20
+
+    id-Velocity-Estimate INTEGER ::= 21
+
+    id-LCS-Service-Type-ID INTEGER ::= 22
+
+    id-Cell-Portion-ID INTEGER ::= 23
+
+    id-Civic-Address INTEGER ::= 24
+
+    id-Barometric-Pressure INTEGER ::= 25
+
+    id-Additional-PositioningDataSet INTEGER ::= 26
+
+    id-RAT-Type INTEGER ::= 27
+
+    id-Ciphering-Data INTEGER ::= 28
+
+    id-Ciphering-Data-Ack INTEGER ::= 29
+
+    id-Ciphering-Data-Error-Report INTEGER ::= 30
+
+    -- **************************************************************
+    --
+    -- Extension constants
+    --
+    -- **************************************************************
+    -- **************************************************************
+    --
+    -- Lists
+    --
+    -- **************************************************************
+
+    max-No-Of-Points INTEGER ::= 15
+
+    max-Set INTEGER ::= 9
+
+    max-GNSS-Set INTEGER ::= 9
+
+    max-Add-Pos-Set INTEGER ::= 8
+
+    max-Cipher-Set INTEGER ::= 16
+
+    maxProtocolExtensions INTEGER ::= 65535
+
+    maxProtocolIEs INTEGER ::= 65535
+
+END
+
+-- **************************************************************
+--
+-- Container definitions
+--
+-- **************************************************************
+LCS-AP-Containers {
+    itu-t(0) identified-organization(4) etsi(0) mobileDomain(0)
+    eps-Access(21) modules(3) lcs-AP(4) version1(1) lcs-AP-Containers(5)
+}
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+    -- **************************************************************
+    --
+    -- IE parameter types from other modules.
+    --
+    -- **************************************************************
+    IMPORTS
+    Criticality, Presence, ProtocolExtensionID, ProtocolIE-ID
+    FROM LCS-AP-CommonDataTypes
+
+    maxProtocolExtensions, maxProtocolIEs
+    FROM LCS-AP-Constants;
+
+    -- **************************************************************
+    --
+    -- Class Definition for Protocol IEs
+    --
+    -- **************************************************************
+
+    LCS-AP-PROTOCOL-IES ::= CLASS {
+        &id          ProtocolIE-ID UNIQUE,
+        &criticality Criticality DEFAULT ignore,
+        &Value       ,
+        &presence    Presence
+    }
+    WITH SYNTAX {
+        ID           &id
+        CRITICALITY  &criticality
+        TYPE         &Value
+        PRESENCE     &presence
+    }
+
+    -- **************************************************************
+    --
+    -- Class Definition for Protocol Extensions
+    --
+    -- **************************************************************
+    LCS-AP-PROTOCOL-EXTENSION ::= CLASS {
+        &id          ProtocolExtensionID UNIQUE,
+        &criticality Criticality DEFAULT ignore,
+        &Extension   ,
+        &presence    Presence
+    }
+    WITH SYNTAX {
+        ID           &id
+        CRITICALITY  &criticality
+        EXTENSION    &Extension
+        PRESENCE     &presence
+    }
+
+    -- **************************************************************
+    --
+    -- Container for Protocol IEs
+    --
+    -- **************************************************************
+
+    ProtocolIE-Container { LCS-AP-PROTOCOL-IES : IEsSetParam } ::= SEQUENCE
+        (SIZE (0..maxProtocolIEs)) OF ProtocolIE-Field { { IEsSetParam } }
+
+    ProtocolIE-Field { LCS-AP-PROTOCOL-IES : IEsSetParam } ::= SEQUENCE {
+        id LCS-AP-PROTOCOL-IES.&id ( { IEsSetParam } ),
+        criticality LCS-AP-PROTOCOL-IES.&criticality ( { IEsSetParam } { @id }),
+        value LCS-AP-PROTOCOL-IES.&Value ( { IEsSetParam } { @id })
+    }
+
+    -- **************************************************************
+    --
+    -- Container Lists for Protocol IE Containers
+    --
+    -- **************************************************************
+    ProtocolIE-ContainerList {
+        INTEGER : lowerBound,
+        INTEGER : upperBound,
+        LCS-AP-PROTOCOL-IES : IEsSetParam
+    } ::= SEQUENCE (SIZE (lowerBound..upperBound)) OF ProtocolIE-Container { { IEsSetParam } }
+
+    -- **************************************************************
+    --
+    -- Container for Protocol Extensions
+    --
+    -- **************************************************************
+    ProtocolExtensionContainer { LCS-AP-PROTOCOL-EXTENSION : ExtensionSetParam } ::= SEQUENCE
+        (SIZE (1..maxProtocolExtensions)) OF ProtocolExtensionField { { ExtensionSetParam } }
+
+    ProtocolExtensionField { LCS-AP-PROTOCOL-EXTENSION : ExtensionSetParam } ::= SEQUENCE {
+        id LCS-AP-PROTOCOL-EXTENSION.&id ( { ExtensionSetParam } ),
+        criticality LCS-AP-PROTOCOL-EXTENSION.&criticality ( { ExtensionSetParam } { @id }),
+        extensionValue LCS-AP-PROTOCOL-EXTENSION.&Extension ( { ExtensionSetParam } { @id })
+    }
+
+END
