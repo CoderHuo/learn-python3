@@ -1,0 +1,2018 @@
+ULP
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+IMPORTS
+	Version, SessionID
+	FROM ULP-Components
+	
+	SUPLINIT
+	FROM SUPL-INIT
+	
+	SUPLSTART
+	FROM SUPL-START
+	
+	SUPLRESPONSE
+	FROM SUPL-RESPONSE
+	
+	SUPLPOSINIT
+	FROM SUPL-POS-INIT
+	
+	SUPLPOS
+	FROM SUPL-POS
+	
+	SUPLEND
+	FROM SUPL-END
+	
+	SUPLAUTHREQ
+	FROM SUPL-AUTH-REQ
+	
+	SUPLAUTHRESP
+	FROM SUPL-AUTH-RESP
+	
+	Ver2-SUPLTRIGGEREDSTART
+	FROM SUPL-TRIGGERED-START
+	
+	Ver2-SUPLTRIGGEREDRESPONSE
+	FROM SUPL-TRIGGERED-RESPONSE
+	
+	Ver2-SUPLREPORT
+	FROM SUPL-REPORT
+	
+	Ver2-SUPLTRIGGEREDSTOP
+	FROM SUPL-TRIGGERED-STOP
+	
+	Ver2-SUPLSETINIT
+	FROM SUPL-SET-INIT
+	
+	Ver2-SUPLNOTIFY
+	FROM SUPL-NOTIFY
+	
+	Ver2-SUPLNOTIFYRESPONSE
+	FROM SUPL-NOTIFY-RESPONSE;
+	
+	ULP-PDU ::= SEQUENCE {
+		length INTEGER (0..65535),
+		version Version,
+		sessionID SessionID,
+		message UlpMessage
+	}
+	
+	UlpMessage ::= CHOICE {
+		msSUPLINIT SUPLINIT,
+		msSUPLSTART SUPLSTART,
+		msSUPLRESPONSE SUPLRESPONSE,
+		msSUPLPOSINIT SUPLPOSINIT,
+		msSUPLPOS SUPLPOS,
+		msSUPLEND SUPLEND,
+		msSUPLAUTHREQ SUPLAUTHREQ,
+		msSUPLAUTHRESP SUPLAUTHRESP,
+		...,
+		msSUPLTRIGGEREDSTART Ver2-SUPLTRIGGEREDSTART,
+		msSUPLTRIGGEREDRESPONSE Ver2-SUPLTRIGGEREDRESPONSE,
+		msSUPLTRIGGEREDSTOP Ver2-SUPLTRIGGEREDSTOP,
+		msSUPLNOTIFY Ver2-SUPLNOTIFY,
+		msSUPLNOTIFYRESPONSE Ver2-SUPLNOTIFYRESPONSE,
+		msSUPLSETINIT Ver2-SUPLSETINIT,
+		msSUPLREPORT Ver2-SUPLREPORT
+	}
+	
+END
+
+SUPL-INIT
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLINIT, Notification;
+
+IMPORTS
+	SLPAddress, QoP, PosMethod
+	FROM ULP-Components
+	
+	Ver2-SUPL-INIT-extension
+	FROM ULP-Version-2-message-extensions
+	
+	Ver2-Notification-extension
+	FROM ULP-Version-2-parameter-extensions;
+	
+	SUPLINIT ::= SEQUENCE {
+		posMethod PosMethod,
+		notification Notification OPTIONAL,
+		sLPAddress SLPAddress OPTIONAL,
+		qoP QoP OPTIONAL,
+		sLPMode SLPMode,
+		mac MAC OPTIONAL,
+		...,
+		keyIdentity KeyIdentity OPTIONAL,
+		ver2-SUPL-INIT-extension Ver2-SUPL-INIT-extension OPTIONAL
+	}
+	
+	Notification ::= SEQUENCE {
+		notificationType NotificationType,
+		encodingType EncodingType OPTIONAL,
+		requestorId OCTET STRING (SIZE(1..maxReqLength)) OPTIONAL,
+		requestorIdType FormatIndicator OPTIONAL,
+		clientName OCTET STRING (SIZE(1..maxClientLength)) OPTIONAL,
+		clientNameType FormatIndicator OPTIONAL,
+		...,
+		ver2-Notification-extension Ver2-Notification-extension OPTIONAL
+	}
+	
+	NotificationType ::= ENUMERATED { noNotificationNoVerification(0), notificationOnly(1), notificationAndVerficationAllowedNA(2), notificationAndVerficationDeniedNA(3), privacyOverride(4), ... }
+	
+	EncodingType ::= ENUMERATED { ucs2(0), gsmDefault(1), utf8(2), ... }
+	
+	maxReqLength INTEGER ::= 50
+	
+	maxClientLength INTEGER ::= 50
+	
+	FormatIndicator ::= ENUMERATED { logicalName(0), e-mailAddress(1), msisdn(2), url(3), sipUrl(4), min(5), mdn(6), iMSPublicidentity(7), ... }
+	
+	SLPMode ::= ENUMERATED { proxy(0), nonProxy(1) }
+	
+	MAC ::= BIT STRING (SIZE(64))
+	
+	KeyIdentity ::= BIT STRING (SIZE(128))
+	
+END
+
+SUPL-START
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLSTART, SETCapabilities;
+
+IMPORTS
+	LocationId, QoP
+	FROM ULP-Components
+	
+	Ver2-SUPL-START-extension
+	FROM ULP-Version-2-message-extensions
+	
+	Ver2-SETCapabilities-extension, Ver2-PosProtocol-extension, Ver2-PosTechnology-extension
+	FROM ULP-Version-2-parameter-extensions;
+	
+	SUPLSTART ::= SEQUENCE {
+		sETCapabilities SETCapabilities,
+		locationId LocationId,
+		qoP QoP OPTIONAL,
+		...,
+		ver2-SUPL-START-extension Ver2-SUPL-START-extension OPTIONAL
+	}
+	
+	SETCapabilities ::= SEQUENCE {
+		posTechnology PosTechnology,
+		prefMethod PrefMethod,
+		posProtocol PosProtocol,
+		...,
+		ver2-SETCapabilities-extension Ver2-SETCapabilities-extension OPTIONAL
+	}
+	
+	PosTechnology ::= SEQUENCE {
+		agpsSETassisted BOOLEAN,
+		agpsSETBased BOOLEAN,
+		autonomousGPS BOOLEAN,
+		aflt BOOLEAN,
+		ecid BOOLEAN,
+		eotd BOOLEAN,
+		otdoa BOOLEAN,
+		...,
+		ver2-PosTechnology-extension Ver2-PosTechnology-extension OPTIONAL
+	}
+	
+	PrefMethod ::= ENUMERATED { agpsSETassistedPreferred, agpsSETBasedPreferred, noPreference }
+	
+	PosProtocol ::= SEQUENCE {
+		tia801 BOOLEAN,
+		rrlp BOOLEAN,
+		rrc BOOLEAN,
+		...,
+		ver2-PosProtocol-extension Ver2-PosProtocol-extension OPTIONAL
+	}
+	
+END
+
+SUPL-RESPONSE
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLRESPONSE;
+
+IMPORTS
+	PosMethod, SLPAddress
+	FROM ULP-Components
+	
+	Ver2-SUPL-RESPONSE-extension
+	FROM ULP-Version-2-message-extensions;
+	
+	SUPLRESPONSE ::= SEQUENCE {
+		posMethod PosMethod,
+		sLPAddress SLPAddress OPTIONAL,
+		sETAuthKey SETAuthKey OPTIONAL,
+		keyIdentity4 KeyIdentity4 OPTIONAL,
+		...,
+		ver2-SUPL-RESPONSE-extension Ver2-SUPL-RESPONSE-extension OPTIONAL
+	}
+	
+	SETAuthKey ::= CHOICE {
+		shortKey BIT STRING (SIZE(128)),
+		longKey BIT STRING (SIZE(256)),
+		...
+	}
+	
+	KeyIdentity4 ::= BIT STRING (SIZE(128))
+	
+END
+
+SUPL-POS-INIT
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLPOSINIT;
+
+IMPORTS
+	SUPLPOS
+	FROM SUPL-POS
+	
+	SETCapabilities
+	FROM SUPL-START
+	
+	LocationId, Position, Ver
+	FROM ULP-Components
+	
+	Ver2-SUPL-POS-INIT-extension
+	FROM ULP-Version-2-message-extensions
+	
+	Ver2-RequestedAssistData-extension
+	FROM ULP-Version-2-parameter-extensions;
+	
+	SUPLPOSINIT ::= SEQUENCE {
+		sETCapabilities SETCapabilities,
+		requestedAssistData RequestedAssistData OPTIONAL,
+		locationId LocationId,
+		position Position OPTIONAL,
+		suplpos SUPLPOS OPTIONAL,
+		ver Ver OPTIONAL,
+		...,
+		ver2-SUPL-POS-INIT-extension Ver2-SUPL-POS-INIT-extension OPTIONAL
+	}
+	
+	RequestedAssistData ::= SEQUENCE {
+		almanacRequested BOOLEAN,
+		utcModelRequested BOOLEAN,
+		ionosphericModelRequested BOOLEAN,
+		dgpsCorrectionsRequested BOOLEAN,
+		referenceLocationRequested BOOLEAN,
+		referenceTimeRequested BOOLEAN,
+		acquisitionAssistanceRequested BOOLEAN,
+		realTimeIntegrityRequested BOOLEAN,
+		navigationModelRequested BOOLEAN,
+		navigationModelData NavigationModel OPTIONAL,
+		...,
+		ver2-RequestedAssistData-extension Ver2-RequestedAssistData-extension OPTIONAL
+	}
+	
+	NavigationModel ::= SEQUENCE {
+		gpsWeek INTEGER (0..1023),
+		gpsToe INTEGER (0..167),
+		nsat INTEGER (0..31),
+		toeLimit INTEGER (0..10),
+		satInfo SatelliteInfo OPTIONAL,
+		...
+	}
+	
+	SatelliteInfo ::= SEQUENCE (SIZE(1..31)) OF SatelliteInfoElement
+	
+	SatelliteInfoElement ::= SEQUENCE {
+		satId INTEGER (0..63),
+		iode INTEGER (0..255),
+		...
+	}
+	
+END
+
+SUPL-POS
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLPOS;
+
+IMPORTS
+	Velocity
+	FROM ULP-Components
+	
+	Ver2-SUPL-POS-extension
+	FROM ULP-Version-2-message-extensions
+	
+	Ver2-PosPayLoad-extension
+	FROM ULP-Version-2-parameter-extensions;
+	
+	SUPLPOS ::= SEQUENCE {
+		posPayLoad PosPayLoad,
+		velocity Velocity OPTIONAL,
+		...,
+		ver2-SUPL-POS-extension Ver2-SUPL-POS-extension OPTIONAL
+	}
+	
+	PosPayLoad ::= CHOICE {
+		tia801payload OCTET STRING (SIZE(1..8192)),
+		rrcPayload OCTET STRING (SIZE(1..8192)),
+		rrlpPayload OCTET STRING (SIZE(1..8192)),
+		...,
+		ver2-PosPayLoad-extension Ver2-PosPayLoad-extension
+	}
+	
+END
+
+SUPL-END
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLEND;
+
+IMPORTS
+	StatusCode, Position, Ver
+	FROM ULP-Components
+	
+	Ver2-SUPL-END-extension
+	FROM ULP-Version-2-message-extensions;
+	
+	SUPLEND ::= SEQUENCE {
+		position Position OPTIONAL,
+		statusCode StatusCode OPTIONAL,
+		ver Ver OPTIONAL,
+		...,
+		ver2-SUPL-END-extension Ver2-SUPL-END-extension OPTIONAL
+	}
+	
+END
+
+SUPL-AUTH-REQ
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLAUTHREQ;
+
+IMPORTS
+	Ver
+	FROM ULP-Components
+	
+	SETCapabilities
+	FROM SUPL-START;
+	
+	SUPLAUTHREQ ::= SEQUENCE {
+		ver Ver OPTIONAL,
+		sETCapabilities SETCapabilities OPTIONAL,
+		...
+	}
+	
+END
+
+SUPL-AUTH-RESP
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS SUPLAUTHRESP;
+
+IMPORTS
+	SPCSETKey, SPCTID, SPCSETKeylifetime
+	FROM Ver2-ULP-Components;
+	
+	SUPLAUTHRESP ::= SEQUENCE {
+		sPCSETKey SPCSETKey,
+		spctid SPCTID,
+		sPCSETKeylifetime SPCSETKeylifetime OPTIONAL,
+		...
+	}
+	
+END
+
+SUPL-NOTIFY
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPLNOTIFY;
+
+IMPORTS
+	Notification
+	FROM SUPL-INIT;
+	
+	Ver2-SUPLNOTIFY ::= SEQUENCE {
+		notification Notification,
+		...
+	}
+	
+END
+
+SUPL-NOTIFY-RESPONSE
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPLNOTIFYRESPONSE;
+	
+	Ver2-SUPLNOTIFYRESPONSE ::= SEQUENCE {
+		notificationResponse NotificationResponse OPTIONAL,
+		...
+	}
+	
+	NotificationResponse ::= ENUMERATED { allowed(0), notAllowed(1), ... }
+	
+END
+
+SUPL-SET-INIT
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPLSETINIT;
+
+IMPORTS
+	SETId, QoP
+	FROM ULP-Components
+	
+	ApplicationID
+	FROM Ver2-ULP-Components;
+	
+	Ver2-SUPLSETINIT ::= SEQUENCE {
+		targetSETID SETId,
+		qoP QoP OPTIONAL,
+		applicationID ApplicationID OPTIONAL,
+		...
+	}
+	
+END
+
+SUPL-TRIGGERED-START
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPLTRIGGEREDSTART, TriggerType, TriggerParams, maxNumGeoArea, maxAreaId, maxAreaIdList;
+
+IMPORTS
+	LocationId, QoP, Ver, Position
+	FROM ULP-Components
+	
+	MultipleLocationIds, CauseCode, ThirdParty, ApplicationID, ReportingCap, Coordinate, CircularArea, EllipticalArea, PolygonArea
+	FROM Ver2-ULP-Components
+	
+	SETCapabilities
+	FROM SUPL-START;
+	
+	Ver2-SUPLTRIGGEREDSTART ::= SEQUENCE {
+		sETCapabilities SETCapabilities,
+		locationId LocationId,
+		ver Ver OPTIONAL,
+		qoP QoP OPTIONAL,
+		multipleLocationIds MultipleLocationIds OPTIONAL,
+		thirdParty ThirdParty OPTIONAL,
+		applicationID ApplicationID OPTIONAL,
+		triggerType TriggerType OPTIONAL,
+		triggerParams TriggerParams OPTIONAL,
+		position Position OPTIONAL,
+		reportingCap ReportingCap OPTIONAL,
+		causeCode CauseCode OPTIONAL,
+		...
+	}
+	
+	TriggerType ::= ENUMERATED { periodic(0), areaEvent(1), ... }
+	
+	TriggerParams ::= CHOICE {
+		periodicParams PeriodicParams,
+		areaEventParams AreaEventParams,
+		...
+	}
+	
+	PeriodicParams ::= SEQUENCE {
+		numberOfFixes INTEGER (1..8639999),
+		intervalBetweenFixes INTEGER (1..8639999),
+		startTime INTEGER (0..2678400) OPTIONAL,
+		...
+	}
+	
+	AreaEventParams ::= SEQUENCE {
+		areaEventType AreaEventType,
+		locationEstimate BOOLEAN,
+		repeatedReportingParams RepeatedReportingParams OPTIONAL,
+		startTime INTEGER (0..2678400) OPTIONAL,
+		stopTime INTEGER (0..11318399) OPTIONAL,
+		geographicTargetAreaList GeographicTargetAreaList OPTIONAL,
+		areaIdLists SEQUENCE (SIZE(1..maxAreaIdList)) OF AreaIdList OPTIONAL,
+		...
+	}
+	
+	AreaEventType ::= ENUMERATED { enteringArea(0), insideArea(1), outsideArea(2), leavingArea(3), ... }
+	
+	RepeatedReportingParams ::= SEQUENCE {
+		minimumIntervalTime INTEGER (1..604800),
+		maximumNumberOfReports INTEGER (1..1024),
+		...
+	}
+	
+	GeographicTargetAreaList ::= SEQUENCE (SIZE(1..maxNumGeoArea)) OF GeographicTargetArea
+	
+	GeographicTargetArea ::= CHOICE {
+		circularArea CircularArea,
+		ellipticalArea EllipticalArea,
+		polygonArea PolygonArea,
+		...
+	}
+	
+	AreaIdList ::= SEQUENCE {
+		areaIdSet AreaIdSet,
+		areaIdSetType AreaIdSetType OPTIONAL,
+		geoAreaMappingList GeoAreaMappingList OPTIONAL
+	}
+	
+	AreaIdSet ::= SEQUENCE (SIZE(1..maxAreaId)) OF AreaId
+	
+	AreaId ::= CHOICE {
+		gSMAreaId GSMAreaId,
+		wCDMAAreaId WCDMAAreaId,
+		cDMAAreaId CDMAAreaId,
+		hRPDAreaId HRPDAreaId,
+		uMBAreaId UMBAreaId,
+		lTEAreaId LTEAreaId,
+		wLANAreaId WLANAreaId,
+		wiMAXAreaId WimaxAreaId,
+		...,
+		nRAreaId NRAreaId
+	}
+	
+	GSMAreaId ::= SEQUENCE {
+		refMCC INTEGER (0..999) OPTIONAL,
+		refMNC INTEGER (0..999) OPTIONAL,
+		refLAC INTEGER (0..65535) OPTIONAL,
+		refCI INTEGER (0..65535) OPTIONAL,
+		...
+	}
+	
+	WCDMAAreaId ::= SEQUENCE {
+		refMCC INTEGER (0..999) OPTIONAL,
+		refMNC INTEGER (0..999) OPTIONAL,
+		refLAC INTEGER (0..65535) OPTIONAL,
+		refUC INTEGER (0..268435455) OPTIONAL,
+		...
+	}
+	
+	CDMAAreaId ::= SEQUENCE {
+		refSID INTEGER (0..65535) OPTIONAL,
+		refNID INTEGER (0..32767) OPTIONAL,
+		refBASEID INTEGER (0..65535) OPTIONAL,
+		...
+	}
+	
+	HRPDAreaId ::= SEQUENCE {
+		refSECTORID BIT STRING (SIZE(128)),
+		...
+	}
+	
+	UMBAreaId ::= SEQUENCE {
+		refMCC INTEGER (0..999) OPTIONAL,
+		refMNC INTEGER (0..999) OPTIONAL,
+		refSECTORID BIT STRING (SIZE(128)) OPTIONAL,
+		...
+	}
+	
+	LTEAreaId ::= SEQUENCE {
+		refMCC INTEGER (0..999) OPTIONAL,
+		refMNC INTEGER (0..999) OPTIONAL,
+		refCI BIT STRING (SIZE(29)) OPTIONAL,
+		...
+	}
+	
+	WLANAreaId ::= SEQUENCE {
+		apMACAddress BIT STRING (SIZE(48)),
+		...
+	}
+	
+	WimaxAreaId ::= SEQUENCE {
+		bsID-MSB BIT STRING (SIZE(24)) OPTIONAL,
+		bsID-LSB BIT STRING (SIZE(24))
+	}
+	
+	NRAreaId ::= SEQUENCE {
+		refMCC INTEGER (0..999) OPTIONAL,
+		refMNC INTEGER (0..999) OPTIONAL,
+		refCI BIT STRING (SIZE(36)) OPTIONAL,
+		...
+	}
+	
+	AreaIdSetType ::= ENUMERATED { border(0), within(1), ... }
+	
+	GeoAreaMappingList ::= SEQUENCE (SIZE(1..maxNumGeoArea)) OF GeoAreaIndex
+	
+	GeoAreaIndex ::= INTEGER (1..maxNumGeoArea)
+	
+	maxNumGeoArea INTEGER ::= 32
+	
+	maxAreaId INTEGER ::= 256
+	
+	maxAreaIdList INTEGER ::= 32
+	
+END
+
+SUPL-TRIGGERED-RESPONSE
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPLTRIGGEREDRESPONSE;
+
+IMPORTS
+	PosMethod, SLPAddress
+	FROM ULP-Components
+	
+	SupportedNetworkInformation, SPCSETKey, SPCTID, SPCSETKeylifetime, GNSSPosTechnology
+	FROM Ver2-ULP-Components
+	
+	TriggerParams
+	FROM SUPL-TRIGGERED-START;
+	
+	Ver2-SUPLTRIGGEREDRESPONSE ::= SEQUENCE {
+		posMethod PosMethod,
+		triggerParams TriggerParams OPTIONAL,
+		sLPAddress SLPAddress OPTIONAL,
+		supportedNetworkInformation SupportedNetworkInformation OPTIONAL,
+		reportingMode ReportingMode OPTIONAL,
+		sPCSETKey SPCSETKey OPTIONAL,
+		spctid SPCTID OPTIONAL,
+		sPCSETKeylifetime SPCSETKeylifetime OPTIONAL,
+		gnssPosTechnology GNSSPosTechnology OPTIONAL,
+		...
+	}
+	
+	ReportingMode ::= SEQUENCE {
+		repMode RepModee,
+		batchRepConditions BatchRepConditions OPTIONAL,
+		batchRepType BatchRepType OPTIONAL,
+		...
+	}
+	
+	RepModee ::= ENUMERATED { realtime(1), quasirealtime(2), batch(3), ... }
+	
+	BatchRepConditions ::= CHOICE {
+		num-interval INTEGER (1..1024),
+		num-minutes INTEGER (1..2048),
+		endofsession NULL,
+		...
+	}
+	
+	BatchRepType ::= SEQUENCE {
+		reportPosition BOOLEAN,
+		reportMeasurements BOOLEAN,
+		intermediateReports BOOLEAN,
+		discardOldest BOOLEAN OPTIONAL,
+		...
+	}
+	
+END
+
+SUPL-REPORT
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPLREPORT;
+
+IMPORTS
+	SETCapabilities
+	FROM SUPL-START
+	
+	Position, PosMethod, SessionID, Ver
+	FROM ULP-Components
+	
+	MultipleLocationIds, GNSSPosTechnology, GANSSSignals
+	FROM Ver2-ULP-Components
+	
+	maxGANSS
+	FROM ULP-Version-2-parameter-extensions;
+	
+	Ver2-SUPLREPORT ::= SEQUENCE {
+		sessionList SessionList OPTIONAL,
+		sETCapabilities SETCapabilities OPTIONAL,
+		reportDataList ReportDataList OPTIONAL,
+		ver Ver OPTIONAL,
+		moreComponents NULL OPTIONAL,
+		...
+	}
+	
+	SessionList ::= SEQUENCE (SIZE(1..maxnumSessions)) OF SessionInformation
+	
+	SessionInformation ::= SEQUENCE {
+		sessionID SessionID,
+		...
+	}
+	
+	maxnumSessions INTEGER ::= 64
+	
+	ReportDataList ::= SEQUENCE (SIZE(1..1024)) OF ReportData
+	
+	ReportData ::= SEQUENCE {
+		positionData PositionData OPTIONAL,
+		multipleLocationIds MultipleLocationIds OPTIONAL,
+		resultCode ResultCode OPTIONAL,
+		timestamp TimeStamp OPTIONAL,
+		...
+	}
+	
+	PositionData ::= SEQUENCE {
+		position Position,
+		posMethod PosMethod OPTIONAL,
+		gnssPosTechnology GNSSPosTechnology OPTIONAL,
+		ganssSignalsInfo GANSSsignalsInfo OPTIONAL,
+		...
+	}
+	
+	GANSSsignalsInfo ::= SEQUENCE (SIZE(1..maxGANSS)) OF GANSSSignalsDescription
+	
+	GANSSSignalsDescription ::= SEQUENCE {
+		ganssId INTEGER (0..15),
+		gANSSSignals GANSSSignals,
+		...
+	}
+	
+	ResultCode ::= ENUMERATED { outofradiocoverage(1), noposition(2), nomeasurement(3), nopositionnomeasurement(4), outofmemory(5), outofmemoryintermediatereporting(6), other(7), ... }
+	
+	TimeStamp ::= CHOICE {
+		absoluteTime UTCTime,
+		relativeTime INTEGER (0..31536000)
+	}
+	
+END
+
+SUPL-TRIGGERED-STOP
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPLTRIGGEREDSTOP;
+
+IMPORTS
+	StatusCode
+	FROM ULP-Components;
+	
+	Ver2-SUPLTRIGGEREDSTOP ::= SEQUENCE {
+		statusCode StatusCode OPTIONAL,
+		...
+	}
+	
+END
+
+ULP-Version-2-message-extensions
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-SUPL-INIT-extension, Ver2-SUPL-START-extension, Ver2-SUPL-RESPONSE-extension, Ver2-SUPL-POS-INIT-extension, Ver2-SUPL-POS-extension, Ver2-SUPL-END-extension;
+
+IMPORTS
+	SLPAddress, Position, Ver
+	FROM ULP-Components
+	
+	SETCapabilities
+	FROM SUPL-START
+	
+	SupportedNetworkInformation, GNSSPosTechnology, MultipleLocationIds, UTRAN-GPSReferenceTimeResult, UTRAN-GANSSReferenceTimeResult, UTRAN-GPSReferenceTimeAssistance, UTRAN-GANSSReferenceTimeAssistance, SPCSETKey, SPCTID, SPCSETKeylifetime, ThirdParty, ApplicationID
+	FROM Ver2-ULP-Components
+	
+	TriggerType
+	FROM SUPL-TRIGGERED-START;
+	
+	Ver2-SUPL-INIT-extension ::= SEQUENCE {
+		notificationMode NotificationMode OPTIONAL,
+		supportedNetworkInformation SupportedNetworkInformation OPTIONAL,
+		triggerType TriggerType OPTIONAL,
+		e-SLPAddress SLPAddress OPTIONAL,
+		historicReporting HistoricReporting OPTIONAL,
+		protectionLevel ProtectionLevel OPTIONAL,
+		gnssPosTechnology GNSSPosTechnology OPTIONAL,
+		minimumMajorVersion INTEGER (0..255) OPTIONAL,
+		...
+	}
+	
+	NotificationMode ::= ENUMERATED { normal(0), basedOnLocation(1), ... }
+	
+	HistoricReporting ::= SEQUENCE {
+		allowedReportingType AllowedReportingType,
+		reportingCriteria ReportingCriteria OPTIONAL,
+		...
+	}
+	
+	AllowedReportingType ::= ENUMERATED { positionsOnly(0), measurementsOnly(1), positionsAndMeasurements(2), ... }
+	
+	ReportingCriteria ::= SEQUENCE {
+		timeWindow TimeWindow OPTIONAL,
+		maxNumberofReports INTEGER (1..65536) OPTIONAL,
+		minTimeInterval INTEGER (1..86400) OPTIONAL,
+		...
+	}
+	
+	TimeWindow ::= SEQUENCE {
+		startTime INTEGER (-525600..-1),
+		stopTime INTEGER (-525599..0)
+	}
+	
+	ProtectionLevel ::= SEQUENCE {
+		protlevel ProtLevel,
+		basicProtectionParams BasicProtectionParams OPTIONAL,
+		...
+	}
+	
+	ProtLevel ::= ENUMERATED { nullProtection(0), basicProtection(1), ... }
+	
+	BasicProtectionParams ::= SEQUENCE {
+		keyIdentifier OCTET STRING (SIZE(8)),
+		basicReplayCounter INTEGER (0..65535),
+		basicMAC BIT STRING (SIZE(32)),
+		...
+	}
+	
+	Ver2-SUPL-START-extension ::= SEQUENCE {
+		multipleLocationIds MultipleLocationIds OPTIONAL,
+		thirdParty ThirdParty OPTIONAL,
+		applicationID ApplicationID OPTIONAL,
+		position Position OPTIONAL,
+		...
+	}
+	
+	Ver2-SUPL-RESPONSE-extension ::= SEQUENCE {
+		supportedNetworkInformation SupportedNetworkInformation OPTIONAL,
+		sPCSETKey SPCSETKey OPTIONAL,
+		spctid SPCTID OPTIONAL,
+		sPCSETKeylifetime SPCSETKeylifetime OPTIONAL,
+		initialApproximateposition Position OPTIONAL,
+		gnssPosTechnology GNSSPosTechnology OPTIONAL,
+		...
+	}
+	
+	Ver2-SUPL-POS-INIT-extension ::= SEQUENCE {
+		multipleLocationIds MultipleLocationIds OPTIONAL,
+		utran-GPSReferenceTimeResult UTRAN-GPSReferenceTimeResult OPTIONAL,
+		utran-GANSSReferenceTimeResult UTRAN-GANSSReferenceTimeResult OPTIONAL,
+		...
+	}
+	
+	Ver2-SUPL-POS-extension ::= SEQUENCE {
+		utran-GPSReferenceTimeAssistance UTRAN-GPSReferenceTimeAssistance OPTIONAL,
+		utran-GPSReferenceTimeResult UTRAN-GPSReferenceTimeResult OPTIONAL,
+		utran-GANSSReferenceTimeAssistance UTRAN-GANSSReferenceTimeAssistance OPTIONAL,
+		utran-GANSSReferenceTimeResult UTRAN-GANSSReferenceTimeResult OPTIONAL,
+		...
+	}
+	
+	Ver2-SUPL-END-extension ::= SEQUENCE {
+		sETCapabilities SETCapabilities OPTIONAL,
+		...
+	}
+	
+END
+
+ULP-Version-2-parameter-extensions
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS maxGANSS, Ver2-Notification-extension, Ver2-SETCapabilities-extension, Ver2-PosProtocol-extension, Ver2-PosTechnology-extension, Ver2-RequestedAssistData-extension, Ver2-PosPayLoad-extension;
+
+IMPORTS
+	GANSSSignals, ReportingCap
+	FROM Ver2-ULP-Components
+	
+	maxNumGeoArea, maxAreaId, maxAreaIdList
+	FROM SUPL-TRIGGERED-START;
+	
+	Ver2-Notification-extension ::= SEQUENCE {
+		emergencyCallLocation NULL OPTIONAL,
+		...
+	}
+	
+	Ver2-SETCapabilities-extension ::= SEQUENCE {
+		serviceCapabilities ServiceCapabilities OPTIONAL,
+		...,
+		supportedBearers SupportedBearers OPTIONAL
+	}
+	
+	ServiceCapabilities ::= SEQUENCE {
+		servicesSupported ServicesSupported,
+		reportingCapabilities ReportingCap OPTIONAL,
+		eventTriggerCapabilities EventTriggerCapabilities OPTIONAL,
+		sessionCapabilities SessionCapabilities,
+		...
+	}
+	
+	ServicesSupported ::= SEQUENCE {
+		periodicTrigger BOOLEAN,
+		areaEventTrigger BOOLEAN,
+		...
+	}
+	
+	EventTriggerCapabilities ::= SEQUENCE {
+		geoAreaShapesSupported GeoAreaShapesSupported,
+		maxNumGeoAreaSupported INTEGER (0..maxNumGeoArea) OPTIONAL,
+		maxAreaIdListSupported INTEGER (0..maxAreaIdList) OPTIONAL,
+		maxAreaIdSupportedPerList INTEGER (0..maxAreaId) OPTIONAL,
+		...
+	}
+	
+	GeoAreaShapesSupported ::= SEQUENCE {
+		ellipticalArea BOOLEAN,
+		polygonArea BOOLEAN,
+		...
+	}
+	
+	SessionCapabilities ::= SEQUENCE {
+		maxNumberTotalSessions INTEGER (1..128),
+		maxNumberPeriodicSessions INTEGER (1..32),
+		maxNumberTriggeredSessions INTEGER (1..32),
+		...
+	}
+	
+	SupportedBearers ::= SEQUENCE {
+		gsm BOOLEAN,
+		wcdma BOOLEAN,
+		lte BOOLEAN,
+		cdma BOOLEAN,
+		hprd BOOLEAN,
+		umb BOOLEAN,
+		wlan BOOLEAN,
+		wiMAX BOOLEAN,
+		...,
+		nr BOOLEAN OPTIONAL
+	}
+	
+	Ver2-PosProtocol-extension ::= SEQUENCE {
+		lpp BOOLEAN,
+		posProtocolVersionRRLP PosProtocolVersion3GPP OPTIONAL,
+		posProtocolVersionRRC PosProtocolVersion3GPP OPTIONAL,
+		posProtocolVersionTIA801 PosProtocolVersion3GPP2 OPTIONAL,
+		posProtocolVersionLPP PosProtocolVersion3GPP OPTIONAL,
+		...,
+		lppe BOOLEAN OPTIONAL,
+		posProtocolVersionLPPe PosProtocolVersionOMA OPTIONAL
+	}
+	
+	PosProtocolVersion3GPP ::= SEQUENCE {
+		majorVersionField INTEGER (0..255),
+		technicalVersionField INTEGER (0..255),
+		editorialVersionField INTEGER (0..255),
+		...
+	}
+	
+	PosProtocolVersion3GPP2 ::= SEQUENCE (SIZE(1..8)) OF Supported3GPP2PosProtocolVersion
+	
+	Supported3GPP2PosProtocolVersion ::= SEQUENCE {
+		revisionNumber BIT STRING (SIZE(6)),
+		pointReleaseNumber INTEGER (0..255),
+		internalEditLevel INTEGER (0..255),
+		...
+	}
+	
+	PosProtocolVersionOMA ::= SEQUENCE {
+		majorVersionField INTEGER (0..255),
+		minorVersionField INTEGER (0..255),
+		...
+	}
+	
+	Ver2-PosTechnology-extension ::= SEQUENCE {
+		gANSSPositionMethods GANSSPositionMethods OPTIONAL,
+		...,
+		additionalPositioningMethods AdditionalPositioningMethods OPTIONAL
+	}
+	
+	GANSSPositionMethods ::= SEQUENCE (SIZE(1..16)) OF GANSSPositionMethod
+	
+	GANSSPositionMethod ::= SEQUENCE {
+		ganssId INTEGER (0..15),
+		ganssSBASid BIT STRING (SIZE(3)) OPTIONAL,
+		gANSSPositioningMethodTypes GANSSPositioningMethodTypes,
+		gANSSSignals GANSSSignals,
+		...
+	}
+	
+	GANSSPositioningMethodTypes ::= SEQUENCE {
+		setAssisted BOOLEAN,
+		setBased BOOLEAN,
+		autonomous BOOLEAN,
+		...
+	}
+	
+	AdditionalPositioningMethods ::= SEQUENCE (SIZE(1..8)) OF AddPosSupport-Element
+	
+	AddPosSupport-Element ::= SEQUENCE {
+		addPosID ENUMERATED { mBS, ... },
+		addPosMode BIT STRING { standalone(0), setBased(1), setAssisted(2) } (SIZE(1..8)) OPTIONAL,
+		...
+	}
+	
+	Ver2-RequestedAssistData-extension ::= SEQUENCE {
+		ganssRequestedCommonAssistanceDataList GanssRequestedCommonAssistanceDataList OPTIONAL,
+		ganssRequestedGenericAssistanceDataList GanssRequestedGenericAssistanceDataList OPTIONAL,
+		extendedEphemeris ExtendedEphemeris OPTIONAL,
+		extendedEphemerisCheck ExtendedEphCheck OPTIONAL,
+		...
+	}
+	
+	GanssRequestedCommonAssistanceDataList ::= SEQUENCE {
+		ganssReferenceTime BOOLEAN,
+		ganssIonosphericModel BOOLEAN,
+		ganssAdditionalIonosphericModelForDataID00 BOOLEAN,
+		ganssAdditionalIonosphericModelForDataID11 BOOLEAN,
+		ganssEarthOrientationParameters BOOLEAN,
+		...,
+		ganssAdditionalIonosphericModelForDataID01 BOOLEAN OPTIONAL
+	}
+	
+	GanssRequestedGenericAssistanceDataList ::= SEQUENCE (SIZE(1..maxGANSS)) OF GanssReqGenericData
+	
+	GanssReqGenericData ::= SEQUENCE {
+		ganssId INTEGER (0..15),
+		ganssSBASid BIT STRING (SIZE(3)) OPTIONAL,
+		ganssRealTimeIntegrity BOOLEAN,
+		ganssDifferentialCorrection DGANSS-Sig-Id-Req OPTIONAL,
+		ganssAlmanac BOOLEAN,
+		ganssNavigationModelData GanssNavigationModelData OPTIONAL,
+		ganssTimeModels BIT STRING (SIZE(16)) OPTIONAL,
+		ganssReferenceMeasurementInfo BOOLEAN,
+		ganssDataBits GanssDataBits OPTIONAL,
+		ganssUTCModel BOOLEAN,
+		ganssAdditionalDataChoices GanssAdditionalDataChoices OPTIONAL,
+		ganssAuxiliaryInformation BOOLEAN,
+		ganssExtendedEphemeris ExtendedEphemeris OPTIONAL,
+		ganssExtendedEphemerisCheck GanssExtendedEphCheck OPTIONAL,
+		...,
+		bds-DifferentialCorrection BDS-Sig-Id-Req OPTIONAL,
+		bds-GridModelReq BOOLEAN OPTIONAL
+	}
+	
+	DGANSS-Sig-Id-Req ::= BIT STRING (SIZE(8))
+	
+	BDS-Sig-Id-Req ::= BIT STRING (SIZE(8))
+	
+	GanssNavigationModelData ::= SEQUENCE {
+		ganssWeek INTEGER (0..4095),
+		ganssToe INTEGER (0..167),
+		t-toeLimit INTEGER (0..15),
+		satellitesListRelatedDataList SatellitesListRelatedDataList OPTIONAL,
+		...
+	}
+	
+	SatellitesListRelatedDataList ::= SEQUENCE (SIZE(0..maxGANSSSat)) OF SatellitesListRelatedData
+	
+	SatellitesListRelatedData ::= SEQUENCE {
+		satId INTEGER (0..63),
+		iod INTEGER (0..1023),
+		...
+	}
+	
+	maxGANSS INTEGER ::= 16
+	
+	maxGANSSSat INTEGER ::= 32
+	
+	GanssDataBits ::= SEQUENCE {
+		ganssTODmin INTEGER (0..59),
+		reqDataBitAssistanceList ReqDataBitAssistanceList,
+		...
+	}
+	
+	ReqDataBitAssistanceList ::= SEQUENCE {
+		gnssSignals GANSSSignals,
+		ganssDataBitInterval INTEGER (0..15),
+		ganssDataBitSatList SEQUENCE (SIZE(1..maxGANSSSat)) OF INTEGER (0..63) OPTIONAL,
+		...
+	}
+	
+	GanssAdditionalDataChoices ::= SEQUENCE {
+		orbitModelID INTEGER (0..7) OPTIONAL,
+		clockModelID INTEGER (0..7) OPTIONAL,
+		utcModelID INTEGER (0..7) OPTIONAL,
+		almanacModelID INTEGER (0..7) OPTIONAL,
+		...
+	}
+	
+	ExtendedEphemeris ::= SEQUENCE {
+		validity INTEGER (1..256),
+		...
+	}
+	
+	ExtendedEphCheck ::= SEQUENCE {
+		beginTime GPSTime,
+		endTime GPSTime,
+		...
+	}
+	
+	GanssExtendedEphCheck ::= SEQUENCE {
+		beginTime GANSSextEphTime,
+		endTime GANSSextEphTime,
+		...
+	}
+	
+	GPSTime ::= SEQUENCE {
+		gPSWeek INTEGER (0..1023),
+		gPSTOWhour INTEGER (0..167),
+		...
+	}
+	
+	GANSSextEphTime ::= SEQUENCE {
+		gANSSday INTEGER (0..8191),
+		gANSSTODhour INTEGER (0..23),
+		...
+	}
+	
+	Ver2-PosPayLoad-extension ::= SEQUENCE {
+		lPPPayload SEQUENCE (SIZE(1..3)) OF OCTET STRING (SIZE(1..60000)) OPTIONAL,
+		tia801Payload SEQUENCE (SIZE(1..3)) OF OCTET STRING (SIZE(1..60000)) OPTIONAL,
+		...
+	}
+	
+END
+
+ULP-Components
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Version, SessionID, IPAddress, SLPAddress, LocationId, Position, StatusCode, Velocity, QoP, PosMethod, Ver, SETId, PrimaryCPICH-Info, CellParametersID, FQDN;
+
+IMPORTS
+	Ver2-CellInfo-extension
+	FROM Ver2-ULP-Components;
+	
+	Version ::= SEQUENCE {
+		maj INTEGER (0..255),
+		min INTEGER (0..255),
+		servind INTEGER (0..255)
+	}
+	
+	SessionID ::= SEQUENCE {
+		setSessionID SetSessionID OPTIONAL,
+		slpSessionID SlpSessionID OPTIONAL
+	}
+	
+	SetSessionID ::= SEQUENCE {
+		sessionId INTEGER (0..65535),
+		setId SETId
+	}
+	
+	SETId ::= CHOICE {
+		msisdn OCTET STRING (SIZE(8)),
+		mdn OCTET STRING (SIZE(8)),
+		min BIT STRING (SIZE(34)),
+		imsi OCTET STRING (SIZE(8)),
+		nai IA5String (SIZE(1..1000)),
+		iPAddress IPAddress,
+		...,
+		ver2-imei OCTET STRING (SIZE(8))
+	}
+	
+	SlpSessionID ::= SEQUENCE {
+		sessionID OCTET STRING (SIZE(4)),
+		slpId SLPAddress
+	}
+	
+	IPAddress ::= CHOICE {
+		ipv4Address OCTET STRING (SIZE(4)),
+		ipv6Address OCTET STRING (SIZE(16))
+	}
+	
+	SLPAddress ::= CHOICE {
+		iPAddress IPAddress,
+		fqdn FQDN,
+		...
+	}
+	
+	FQDN ::= VisibleString (FROM("a".."z"|"A".."Z"|"0".."9"|".-")) (SIZE(1..255))
+	
+	Ver ::= BIT STRING (SIZE(64))
+	
+	LocationId ::= SEQUENCE {
+		cellInfo CellInfo,
+		status Status,
+		...
+	}
+	
+	Status ::= ENUMERATED { stale(0), current(1), unknown(2), ... }
+	
+	CellInfo ::= CHOICE {
+		gsmCell GsmCellInformation,
+		wcdmaCell WcdmaCellInformation,
+		cdmaCell CdmaCellInformation,
+		...,
+		ver2-CellInfo-extension Ver2-CellInfo-extension
+	}
+	
+	Position ::= SEQUENCE {
+		timestamp UTCTime,
+		positionEstimate PositionEstimate,
+		velocity Velocity OPTIONAL,
+		...
+	}
+	
+	PositionEstimate ::= SEQUENCE {
+		latitudeSign ENUMERATED { north, south },
+		latitude INTEGER (0..8388607),
+		longitude INTEGER (-8388608..8388607),
+		uncertainty SEQUENCE {
+			uncertaintySemiMajor INTEGER (0..127),
+			uncertaintySemiMinor INTEGER (0..127),
+			orientationMajorAxis INTEGER (0..180)
+		} OPTIONAL,
+		confidence INTEGER (0..100) OPTIONAL,
+		altitudeInfo AltitudeInfo OPTIONAL,
+		...
+	}
+	
+	AltitudeInfo ::= SEQUENCE {
+		altitudeDirection ENUMERATED { height, depth },
+		altitude INTEGER (0..32767),
+		altUncertainty INTEGER (0..127),
+		...
+	}
+	
+	CdmaCellInformation ::= SEQUENCE {
+		refNID INTEGER (0..65535),
+		refSID INTEGER (0..32767),
+		refBASEID INTEGER (0..65535),
+		refBASELAT INTEGER (0..4194303),
+		reBASELONG INTEGER (0..8388607),
+		refREFPN INTEGER (0..511),
+		refWeekNumber INTEGER (0..65535),
+		refSeconds INTEGER (0..4194303),
+		...
+	}
+	
+	GsmCellInformation ::= SEQUENCE {
+		refMCC INTEGER (0..999),
+		refMNC INTEGER (0..999),
+		refLAC INTEGER (0..65535),
+		refCI INTEGER (0..65535),
+		nmr NMR OPTIONAL,
+		ta INTEGER (0..255) OPTIONAL,
+		...
+	}
+	
+	WcdmaCellInformation ::= SEQUENCE {
+		refMCC INTEGER (0..999),
+		refMNC INTEGER (0..999),
+		refUC INTEGER (0..268435455),
+		frequencyInfo FrequencyInfo OPTIONAL,
+		primaryScramblingCode INTEGER (0..511) OPTIONAL,
+		measuredResultsList MeasuredResultsList OPTIONAL,
+		...,
+		cellParametersId INTEGER (0..127) OPTIONAL,
+		timingAdvance TimingAdvance OPTIONAL
+	}
+	
+	TimingAdvance ::= SEQUENCE {
+		ta INTEGER (0..8191),
+		tAResolution TAResolution OPTIONAL,
+		chipRate ChipRate OPTIONAL,
+		...
+	}
+	
+	TAResolution ::= ENUMERATED { res10chip(0), res05chip(1), res0125chip(2), ... }
+	
+	ChipRate ::= ENUMERATED { tdd128(0), tdd384(1), tdd768(2), ... }
+	
+	FrequencyInfo ::= SEQUENCE {
+		modeSpecificInfo CHOICE {
+			fdd FrequencyInfoFDD,
+			tdd FrequencyInfoTDD,
+			...
+		},
+		...
+	}
+	
+	FrequencyInfoFDD ::= SEQUENCE {
+		uarfcn-UL UARFCN OPTIONAL,
+		uarfcn-DL UARFCN,
+		...
+	}
+	
+	FrequencyInfoTDD ::= SEQUENCE {
+		uarfcn-Nt UARFCN,
+		...
+	}
+	
+	UARFCN ::= INTEGER (0..16383)
+	
+	NMR ::= SEQUENCE (SIZE(1..15)) OF NMRelement
+	
+	NMRelement ::= SEQUENCE {
+		arfcn INTEGER (0..1023),
+		bsic INTEGER (0..63),
+		rxLev INTEGER (0..63),
+		...
+	}
+	
+	MeasuredResultsList ::= SEQUENCE (SIZE(1..maxFreq)) OF MeasuredResults
+	
+	MeasuredResults ::= SEQUENCE {
+		frequencyInfo FrequencyInfo OPTIONAL,
+		utra-CarrierRSSI UTRA-CarrierRSSI OPTIONAL,
+		cellMeasuredResultsList CellMeasuredResultsList OPTIONAL
+	}
+	
+	CellMeasuredResultsList ::= SEQUENCE (SIZE(1..maxCellMeas)) OF CellMeasuredResults
+	
+	UTRA-CarrierRSSI ::= INTEGER (0..127)
+	
+	CellMeasuredResults ::= SEQUENCE {
+		cellIdentity INTEGER (0..268435455) OPTIONAL,
+		modeSpecificInfo CHOICE {
+			fdd SEQUENCE {
+				primaryCPICH-Info PrimaryCPICH-Info,
+				cpich-Ec-N0 CPICH-Ec-N0 OPTIONAL,
+				cpich-RSCP CPICH-RSCP OPTIONAL,
+				pathloss Pathloss OPTIONAL
+			},
+			tdd SEQUENCE {
+				cellParametersID CellParametersID,
+				proposedTGSN TGSN OPTIONAL,
+				primaryCCPCH-RSCP PrimaryCCPCH-RSCP OPTIONAL,
+				pathloss Pathloss OPTIONAL,
+				timeslotISCP-List TimeslotISCP-List OPTIONAL
+			}
+		}
+	}
+	
+	CellParametersID ::= INTEGER (0..127)
+	
+	TGSN ::= INTEGER (0..14)
+	
+	PrimaryCCPCH-RSCP ::= INTEGER (0..127)
+	
+	TimeslotISCP ::= INTEGER (0..127)
+	
+	TimeslotISCP-List ::= SEQUENCE (SIZE(1..maxTS)) OF TimeslotISCP
+	
+	PrimaryCPICH-Info ::= SEQUENCE {
+		primaryScramblingCode INTEGER (0..511)
+	}
+	
+	CPICH-Ec-N0 ::= INTEGER (0..63)
+	
+	CPICH-RSCP ::= INTEGER (0..127)
+	
+	Pathloss ::= INTEGER (46..173)
+	
+	maxCellMeas INTEGER ::= 32
+	
+	maxFreq INTEGER ::= 8
+	
+	maxTS INTEGER ::= 14
+	
+	StatusCode ::= ENUMERATED { unspecified(0), systemFailure(1), unexpectedMessage(2), protocolError(3), dataMissing(4), unexpectedDataValue(5), posMethodFailure(6), posMethodMismatch(7), posProtocolMismatch(8), targetSETnotReachable(9), versionNotSupported(10), resourceShortage(11), invalidSessionId(12), nonProxyModeNotSupported(13), proxyModeNotSupported(14), positioningNotPermitted(15), authNetFailure(16), authSuplinitFailure(17), consentDeniedByUser(100), consentGrantedByUser(101), ..., ver2-incompatibleProtectionLevel(18), ver2-serviceNotSupported(19), ver2-insufficientInterval(20), ver2-noSUPLCoverage(21), ver2-sessionStopped(102), ver2-appIdDenied(103) }
+	
+	QoP ::= SEQUENCE {
+		horacc INTEGER (0..127),
+		veracc INTEGER (0..127) OPTIONAL,
+		maxLocAge INTEGER (0..65535) OPTIONAL,
+		delay INTEGER (0..7) OPTIONAL,
+		...,
+		ver2-responseTime INTEGER (1..128) OPTIONAL
+	}
+	
+	Velocity ::= CHOICE {
+		horvel Horvel,
+		horandvervel Horandvervel,
+		horveluncert Horveluncert,
+		horandveruncert Horandveruncert,
+		...
+	}
+	
+	Horvel ::= SEQUENCE {
+		bearing BIT STRING (SIZE(9)),
+		horspeed BIT STRING (SIZE(16)),
+		...
+	}
+	
+	Horandvervel ::= SEQUENCE {
+		verdirect BIT STRING (SIZE(1)),
+		bearing BIT STRING (SIZE(9)),
+		horspeed BIT STRING (SIZE(16)),
+		verspeed BIT STRING (SIZE(8)),
+		...
+	}
+	
+	Horveluncert ::= SEQUENCE {
+		bearing BIT STRING (SIZE(9)),
+		horspeed BIT STRING (SIZE(16)),
+		uncertspeed BIT STRING (SIZE(8)),
+		...
+	}
+	
+	Horandveruncert ::= SEQUENCE {
+		verdirect BIT STRING (SIZE(1)),
+		bearing BIT STRING (SIZE(9)),
+		horspeed BIT STRING (SIZE(16)),
+		verspeed BIT STRING (SIZE(8)),
+		horuncertspeed BIT STRING (SIZE(8)),
+		veruncertspeed BIT STRING (SIZE(8)),
+		...
+	}
+	
+	PosMethod ::= ENUMERATED { agpsSETassisted(0), agpsSETbased(1), agpsSETassistedpref(2), agpsSETbasedpref(3), autonomousGPS(4), aflt(5), ecid(6), eotd(7), otdoa(8), noPosition(9), ..., ver2-historicalDataRetrieval(10), ver2-agnssSETassisted(11), ver2-agnssSETbased(12), ver2-agnssSETassistedpref(13), ver2-agnssSETbasedpref(14), ver2-autonomousGNSS(15), ver2-sessioninfoquery(16), ver2-mbs(17) }
+	
+END
+
+Ver2-ULP-Components
+DEFINITIONS
+AUTOMATIC TAGS ::=
+BEGIN
+
+EXPORTS Ver2-CellInfo-extension, MultipleLocationIds, SupportedNetworkInformation, CauseCode, UTRAN-GPSReferenceTimeAssistance, UTRAN-GPSReferenceTimeResult, SPCSETKey, SPCTID, SPCSETKeylifetime, UTRAN-GANSSReferenceTimeAssistance, UTRAN-GANSSReferenceTimeResult, GNSSPosTechnology, GANSSSignals, ThirdParty, ApplicationID, ReportingCap, Coordinate, CircularArea, EllipticalArea, PolygonArea;
+
+IMPORTS
+	LocationId, PrimaryCPICH-Info, CellParametersID, FQDN
+	FROM ULP-Components;
+	
+	MultipleLocationIds ::= SEQUENCE (SIZE(1..maxLidSize)) OF LocationIdData
+	
+	LocationIdData ::= SEQUENCE {
+		locationId LocationId,
+		relativetimestamp RelativeTime OPTIONAL,
+		servingFlag BOOLEAN,
+		...
+	}
+	
+	RelativeTime ::= INTEGER (0..65535)
+	
+	maxLidSize INTEGER ::= 64
+	
+	SupportedNetworkInformation ::= SEQUENCE {
+		wlan BOOLEAN,
+		supportedWLANInfo SupportedWLANInfo OPTIONAL,
+		supportedWLANApsList SupportedWLANApsList OPTIONAL,
+		gsm BOOLEAN,
+		wcdma BOOLEAN,
+		supportedWCDMAInfo SupportedWCDMAInfo OPTIONAL,
+		cdma BOOLEAN,
+		hrdp BOOLEAN,
+		umb BOOLEAN,
+		lte BOOLEAN,
+		wimax BOOLEAN,
+		historic BOOLEAN,
+		nonServing BOOLEAN,
+		uTRANGPSReferenceTime BOOLEAN,
+		uTRANGANSSReferenceTime BOOLEAN,
+		...,
+		nr BOOLEAN OPTIONAL
+	}
+	
+	SupportedWLANInfo ::= SEQUENCE {
+		apTP BOOLEAN,
+		apAG BOOLEAN,
+		apSN BOOLEAN,
+		apDevType BOOLEAN,
+		apRSSI BOOLEAN,
+		apChanFreq BOOLEAN,
+		apRTD BOOLEAN,
+		setTP BOOLEAN,
+		setAG BOOLEAN,
+		setSN BOOLEAN,
+		setRSSI BOOLEAN,
+		apRepLoc BOOLEAN,
+		...,
+		apRL BOOLEAN OPTIONAL,
+		opClass BOOLEAN OPTIONAL,
+		apSSID BOOLEAN OPTIONAL,
+		apPHYType BOOLEAN OPTIONAL,
+		setMACAddress BOOLEAN OPTIONAL
+	}
+	
+	maxWLANApDataSize INTEGER ::= 128
+	
+	SupportedWLANApsList ::= SEQUENCE {
+		supportedWLANApDataList SEQUENCE (SIZE(1..maxWLANApDataSize)) OF SupportedWLANApData,
+		supportedWLANapsChannel11a SupportedWLANApsChannel11a OPTIONAL,
+		supportedWLANapsChannel11bg SupportedWLANApsChannel11bg OPTIONAL,
+		...
+	}
+	
+	SupportedWLANApsChannel11a ::= SEQUENCE {
+		ch34 BOOLEAN,
+		ch36 BOOLEAN,
+		ch38 BOOLEAN,
+		ch40 BOOLEAN,
+		ch42 BOOLEAN,
+		ch44 BOOLEAN,
+		ch46 BOOLEAN,
+		ch48 BOOLEAN,
+		ch52 BOOLEAN,
+		ch56 BOOLEAN,
+		ch60 BOOLEAN,
+		ch64 BOOLEAN,
+		ch149 BOOLEAN,
+		ch153 BOOLEAN,
+		ch157 BOOLEAN,
+		ch161 BOOLEAN
+	}
+	
+	SupportedWLANApsChannel11bg ::= SEQUENCE {
+		ch1 BOOLEAN,
+		ch2 BOOLEAN,
+		ch3 BOOLEAN,
+		ch4 BOOLEAN,
+		ch5 BOOLEAN,
+		ch6 BOOLEAN,
+		ch7 BOOLEAN,
+		ch8 BOOLEAN,
+		ch9 BOOLEAN,
+		ch10 BOOLEAN,
+		ch11 BOOLEAN,
+		ch12 BOOLEAN,
+		ch13 BOOLEAN,
+		ch14 BOOLEAN
+	}
+	
+	SupportedWLANApData ::= SEQUENCE {
+		apMACAddress BIT STRING (SIZE(48)),
+		apDevType ENUMERATED { wlan802-11a(0), wlan802-11b(1), wlan802-11g(2), ... },
+		...
+	}
+	
+	SupportedWCDMAInfo ::= SEQUENCE {
+		mrl BOOLEAN,
+		...
+	}
+	
+	Ver2-CellInfo-extension ::= CHOICE {
+		hrpdCell HrpdCellInformation,
+		umbCell UmbCellInformation,
+		lteCell LteCellInformation,
+		wlanAP WlanAPInformation,
+		wimaxBS WimaxBSInformation,
+		...,
+		nrCell NRCellInformation
+	}
+	
+	HrpdCellInformation ::= SEQUENCE {
+		refSECTORID BIT STRING (SIZE(128)) OPTIONAL,
+		refBASELAT INTEGER (0..4194303),
+		reBASELONG INTEGER (0..8388607),
+		refWeekNumber INTEGER (0..65535),
+		refSeconds INTEGER (0..4194303),
+		...
+	}
+	
+	UmbCellInformation ::= SEQUENCE {
+		refSECTORID BIT STRING (SIZE(128)),
+		refMCC INTEGER (0..999),
+		refMNC INTEGER (0..999),
+		refBASELAT INTEGER (0..4194303),
+		reBASELONG INTEGER (0..8388607),
+		refWeekNumber INTEGER (0..65535),
+		refSeconds INTEGER (0..4194303),
+		...
+	}
+	
+	LteCellInformation ::= SEQUENCE {
+		cellGlobalIdEUTRA CellGlobalIdEUTRA,
+		physCellId PhysCellId,
+		trackingAreaCode TrackingAreaCode,
+		rsrpResult RSRP-Range OPTIONAL,
+		rsrqResult RSRQ-Range OPTIONAL,
+		ta INTEGER (0..1282) OPTIONAL,
+		measResultListEUTRA MeasResultListEUTRA OPTIONAL,
+		...,
+		earfcn INTEGER (0..65535) OPTIONAL,
+		earfcn-ext INTEGER (65536..262143) OPTIONAL,
+		rsrpResult-ext RSRP-Range-Ext OPTIONAL,
+		rsrqResult-ext RSRQ-Range-Ext OPTIONAL,
+		rs-sinrResult RS-SINR-Range OPTIONAL,
+		servingInformation5G ServingInformation5G OPTIONAL
+	}
+	
+	MeasResultListEUTRA ::= SEQUENCE (SIZE(1..maxCellReport)) OF MeasResultEUTRA
+	
+	MeasResultEUTRA ::= SEQUENCE {
+		physCellId PhysCellId,
+		cgi-Info SEQUENCE {
+			cellGlobalId CellGlobalIdEUTRA,
+			trackingAreaCode TrackingAreaCode
+		} OPTIONAL,
+		measResult SEQUENCE {
+			rsrpResult RSRP-Range OPTIONAL,
+			rsrqResult RSRQ-Range OPTIONAL,
+			...,
+			earfcn INTEGER (0..65535) OPTIONAL,
+			earfcn-ext INTEGER (65536..262143) OPTIONAL,
+			rsrpResult-ext RSRP-Range-Ext OPTIONAL,
+			rsrqResult-ext RSRQ-Range-Ext OPTIONAL,
+			rs-sinrResult RS-SINR-Range OPTIONAL,
+			neighbourInformation5G NeighbourInformation5G OPTIONAL
+		}
+	}
+	
+	PhysCellId ::= INTEGER (0..503)
+	
+	TrackingAreaCode ::= BIT STRING (SIZE(16))
+	
+	CellGlobalIdEUTRA ::= SEQUENCE {
+		plmn-Identity PLMN-Identity,
+		cellIdentity CellIdentity,
+		...
+	}
+	
+	PLMN-Identity ::= SEQUENCE {
+		mcc MCC OPTIONAL,
+		mnc MNC
+	}
+	
+	CellIdentity ::= BIT STRING (SIZE(28))
+	
+	MCC ::= SEQUENCE (SIZE(3)) OF MCC-MNC-Digit
+	
+	MNC ::= SEQUENCE (SIZE(2..3)) OF MCC-MNC-Digit
+	
+	MCC-MNC-Digit ::= INTEGER (0..9)
+	
+	RSRP-Range ::= INTEGER (0..97)
+	
+	RSRQ-Range ::= INTEGER (0..34)
+	
+	RSRP-Range-Ext ::= INTEGER (-17..-1)
+	
+	RSRQ-Range-Ext ::= INTEGER (-30..46)
+	
+	RS-SINR-Range ::= INTEGER (0..127)
+	
+	ServingInformation5G ::= SEQUENCE {
+		trackingAreaCode TrackingAreaCodeNR,
+		...
+	}
+	
+	NeighbourInformation5G ::= SEQUENCE {
+		trackingAreaCode TrackingAreaCodeNR OPTIONAL,
+		...
+	}
+	
+	maxCellReport INTEGER ::= 8
+	
+	WlanAPInformation ::= SEQUENCE {
+		apMACAddress BIT STRING (SIZE(48)),
+		apTransmitPower INTEGER (-127..128) OPTIONAL,
+		apAntennaGain INTEGER (-127..128) OPTIONAL,
+		apSignaltoNoise INTEGER (-127..128) OPTIONAL,
+		apDeviceType ENUMERATED { wlan802-11a(0), wlan802-11b(1), wlan802-11g(2), ..., wlan802-11n(3), wlan802-11ac(4), wlan802-11ad(5) } OPTIONAL,
+		apSignalStrength INTEGER (-127..128) OPTIONAL,
+		apChannelFrequency INTEGER (0..256) OPTIONAL,
+		apRoundTripDelay RTD OPTIONAL,
+		setTransmitPower INTEGER (-127..128) OPTIONAL,
+		setAntennaGain INTEGER (-127..128) OPTIONAL,
+		setSignaltoNoise INTEGER (-127..128) OPTIONAL,
+		setSignalStrength INTEGER (-127..128) OPTIONAL,
+		apReportedLocation ReportedLocation OPTIONAL,
+		...,
+		apRepLocation RepLocation OPTIONAL,
+		apSignalStrengthDelta INTEGER (0..1) OPTIONAL,
+		apSignaltoNoiseDelta INTEGER (0..1) OPTIONAL,
+		setSignalStrengthDelta INTEGER (0..1) OPTIONAL,
+		setSignaltoNoiseDelta INTEGER (0..1) OPTIONAL,
+		operatingClass INTEGER (0..255) OPTIONAL,
+		apSSID OCTET STRING (SIZE(1..32)) OPTIONAL,
+		apPHYType ENUMERATED { unknown(0), any(1), fhss(2), dsss(3), irbaseband(4), ofdm(5), hrdsss(6), erp(7), ht(8), ihv(9), ... } OPTIONAL,
+		setMACAddress BIT STRING (SIZE(48)) OPTIONAL
+	}
+	
+	RTD ::= SEQUENCE {
+		rTDValue INTEGER (0..16777216),
+		rTDUnits RTDUnits,
+		rTDAccuracy INTEGER (0..255) OPTIONAL,
+		...
+	}
+	
+	RTDUnits ::= ENUMERATED { microseconds(0), hundredsofnanoseconds(1), tensofnanoseconds(2), nanoseconds(3), tenthsofnanoseconds(4), ... }
+	
+	ReportedLocation ::= SEQUENCE {
+		locationEncodingDescriptor LocationEncodingDescriptor,
+		locationData LocationData,
+		...
+	}
+	
+	LocationEncodingDescriptor ::= ENUMERATED { lci(0), asn1(1), ... }
+	
+	LocationData ::= SEQUENCE {
+		locationAccuracy INTEGER (0..4294967295) OPTIONAL,
+		locationValue OCTET STRING (SIZE(1..128)),
+		...
+	}
+	
+	RepLocation ::= CHOICE {
+		lciLocData LciLocData,
+		...
+	}
+	
+	LciLocData ::= SEQUENCE {
+		locationDataLCI LocationDataLCI OPTIONAL,
+		...
+	}
+	
+	LocationDataLCI ::= SEQUENCE {
+		latitudeResolution BIT STRING (SIZE(6)),
+		latitude BIT STRING (SIZE(34)),
+		longitudeResolution BIT STRING (SIZE(6)),
+		longitude BIT STRING (SIZE(34)),
+		altitudeType BIT STRING (SIZE(4)),
+		altitudeResolution BIT STRING (SIZE(6)),
+		altitude BIT STRING (SIZE(30)),
+		datum BIT STRING (SIZE(8)),
+		...
+	}
+	
+	WimaxBSInformation ::= SEQUENCE {
+		wimaxBsID WimaxBsID,
+		wimaxRTD WimaxRTD OPTIONAL,
+		wimaxNMRList WimaxNMRList OPTIONAL,
+		...
+	}
+	
+	WimaxBsID ::= SEQUENCE {
+		bsID-MSB BIT STRING (SIZE(24)) OPTIONAL,
+		bsID-LSB BIT STRING (SIZE(24)),
+		...
+	}
+	
+	WimaxRTD ::= SEQUENCE {
+		rtd INTEGER (0..65535),
+		rTDstd INTEGER (0..1023) OPTIONAL,
+		...
+	}
+	
+	WimaxNMRList ::= SEQUENCE (SIZE(1..maxWimaxBSMeas)) OF WimaxNMR
+	
+	WimaxNMR ::= SEQUENCE {
+		wimaxBsID WimaxBsID,
+		relDelay INTEGER (-32768..32767) OPTIONAL,
+		relDelaystd INTEGER (0..1023) OPTIONAL,
+		rssi INTEGER (0..255) OPTIONAL,
+		rSSIstd INTEGER (0..63) OPTIONAL,
+		bSTxPower INTEGER (0..255) OPTIONAL,
+		cinr INTEGER (0..255) OPTIONAL,
+		cINRstd INTEGER (0..63) OPTIONAL,
+		bSLocation ReportedLocation OPTIONAL,
+		...
+	}
+	
+	maxWimaxBSMeas INTEGER ::= 32
+	
+	NRCellInformation ::= SEQUENCE {
+		servingCellInformation ServingCellInformationNR,
+		measuredResultsListNR MeasResultListNR OPTIONAL,
+		...
+	}
+	
+	ServingCellInformationNR ::= SEQUENCE (SIZE(1..maxNRServingCell)) OF ServCellNR
+	
+	ServCellNR ::= SEQUENCE {
+		physCellId PhysCellIdNR,
+		arfcn-NR ARFCN-NR,
+		cellGlobalId CellGlobalIdNR,
+		trackingAreaCode TrackingAreaCodeNR,
+		ssb-Measurements NR-Measurements OPTIONAL,
+		csi-rs-Measurements NR-Measurements OPTIONAL,
+		ta INTEGER (0..3846) OPTIONAL,
+		...
+	}
+	
+	MeasResultListNR ::= SEQUENCE (SIZE(1..maxCellReportNR)) OF MeasResultNR
+	
+	MeasResultNR ::= SEQUENCE {
+		physCellId PhysCellIdNR,
+		arfcn-NR ARFCN-NR,
+		cellGlobalId CellGlobalIdNR OPTIONAL,
+		trackingAreaCode TrackingAreaCodeNR OPTIONAL,
+		ssb-Measurements NR-Measurements OPTIONAL,
+		csi-rs-Measurements NR-Measurements OPTIONAL,
+		...
+	}
+	
+	PhysCellIdNR ::= INTEGER (0..1007)
+	
+	ARFCN-NR ::= INTEGER (0..3279165)
+	
+	TrackingAreaCodeNR ::= BIT STRING (SIZE(24))
+	
+	CellGlobalIdNR ::= SEQUENCE {
+		plmn-Identity PLMN-Identity,
+		cellIdentityNR CellIdentityNR,
+		...
+	}
+	
+	CellIdentityNR ::= BIT STRING (SIZE(36))
+	
+	NR-Measurements ::= SEQUENCE {
+		rsrp-Range INTEGER (0..127) OPTIONAL,
+		rsrq-Range INTEGER (0..127) OPTIONAL,
+		sinr-Range INTEGER (0..127) OPTIONAL,
+		...
+	}
+	
+	maxNRServingCell INTEGER ::= 32
+	
+	maxCellReportNR INTEGER ::= 32
+	
+	UTRAN-GPSReferenceTimeAssistance ::= SEQUENCE {
+		utran-GPSReferenceTime UTRAN-GPSReferenceTime,
+		gpsReferenceTimeUncertainty INTEGER (0..127) OPTIONAL,
+		utranGPSDriftRate UTRANGPSDriftRate OPTIONAL
+	}
+	
+	UTRAN-GPSReferenceTime ::= SEQUENCE {
+		utran-GPSTimingOfCell SEQUENCE {
+			ms-part INTEGER (0..1023),
+			ls-part INTEGER (0..4294967295)
+		},
+		modeSpecificInfo CHOICE {
+			fdd SEQUENCE {
+				referenceIdentity PrimaryCPICH-Info
+			},
+			tdd SEQUENCE {
+				referenceIdentity CellParametersID
+			}
+		} OPTIONAL,
+		sfn INTEGER (0..4095)
+	}
+	
+	UTRANGPSDriftRate ::= ENUMERATED { utran-GPSDrift0, utran-GPSDrift1, utran-GPSDrift2, utran-GPSDrift5, utran-GPSDrift10, utran-GPSDrift15, utran-GPSDrift25, utran-GPSDrift50, utran-GPSDrift-1, utran-GPSDrift-2, utran-GPSDrift-5, utran-GPSDrift-10, utran-GPSDrift-15, utran-GPSDrift-25, utran-GPSDrift-50 }
+	
+	UTRAN-GPSReferenceTimeResult ::= SEQUENCE {
+		set-GPSTimingOfCell SEQUENCE {
+			ms-part INTEGER (0..16383),
+			ls-part INTEGER (0..4294967295)
+		},
+		modeSpecificInfo CHOICE {
+			fdd SEQUENCE {
+				referenceIdentity PrimaryCPICH-Info
+			},
+			tdd SEQUENCE {
+				referenceIdentity CellParametersID
+			}
+		} OPTIONAL,
+		sfn INTEGER (0..4095),
+		gpsReferenceTimeUncertainty INTEGER (0..127) OPTIONAL,
+		...
+	}
+	
+	UTRAN-GANSSReferenceTimeAssistance ::= SEQUENCE {
+		ganssDay INTEGER (0..8191) OPTIONAL,
+		ganssTimeID INTEGER (0..15),
+		utran-GANSSReferenceTime UTRAN-GANSSReferenceTime,
+		utranGANSSDriftRate UTRANGANSSDriftRate OPTIONAL
+	}
+	
+	UTRAN-GANSSReferenceTime ::= SEQUENCE {
+		ganssTOD INTEGER (0..86399),
+		utran-GANSSTimingOfCell INTEGER (0..3999999) OPTIONAL,
+		modeSpecificInfo CHOICE {
+			fdd SEQUENCE {
+				referenceIdentity PrimaryCPICH-Info
+			},
+			tdd SEQUENCE {
+				referenceIdentity CellParametersID
+			}
+		} OPTIONAL,
+		sfn INTEGER (0..4095),
+		ganss-TODUncertainty INTEGER (0..127) OPTIONAL,
+		...
+	}
+	
+	UTRANGANSSDriftRate ::= ENUMERATED { utran-GANSSDrift0, utran-GANSSDrift1, utran-GANSSDrift2, utran-GANSSDrift5, utran-GANSSDrift10, utran-GANSSDrift15, utran-GANSSDrift25, utran-GANSSDrift50, utran-GANSSDrift-1, utran-GANSSDrift-2, utran-GANSSDrift-5, utran-GANSSDrift-10, utran-GANSSDrift-15, utran-GANSSDrift-25, utran-GANSSDrift-50 }
+	
+	UTRAN-GANSSReferenceTimeResult ::= SEQUENCE {
+		ganssTimeID INTEGER (0..15),
+		set-GANSSReferenceTime SET-GANSSReferenceTime,
+		...
+	}
+	
+	SET-GANSSReferenceTime ::= SEQUENCE {
+		set-GANSSTimingOfCell SEQUENCE {
+			ms-part INTEGER (0..80),
+			ls-part INTEGER (0..4294967295)
+		} OPTIONAL,
+		modeSpecificInfo CHOICE {
+			fdd SEQUENCE {
+				referenceIdentity PrimaryCPICH-Info
+			},
+			tdd SEQUENCE {
+				referenceIdentity CellParametersID
+			}
+		} OPTIONAL,
+		sfn INTEGER (0..4095),
+		ganss-TODUncertainty INTEGER (0..127) OPTIONAL,
+		...
+	}
+	
+	GNSSPosTechnology ::= SEQUENCE {
+		gps BOOLEAN,
+		galileo BOOLEAN,
+		sbas BOOLEAN,
+		modernized-gps BOOLEAN,
+		qzss BOOLEAN,
+		glonass BOOLEAN,
+		...,
+		bds BOOLEAN OPTIONAL
+	}
+	
+	GANSSSignals ::= BIT STRING { signal1(0), signal2(1), signal3(2), signal4(3), signal5(4), signal6(5), signal7(6), signal8(7) } (SIZE(1..8))
+	
+	SPCSETKey ::= BIT STRING (SIZE(128))
+	
+	SPCTID ::= SEQUENCE {
+		rand BIT STRING (SIZE(128)),
+		slpFQDN FQDN,
+		...
+	}
+	
+	SPCSETKeylifetime ::= INTEGER (1..24)
+	
+	CauseCode ::= ENUMERATED { servingNetWorkNotInAreaIdList(0), sETCapabilitiesChanged(1), noSUPLCoverage(2), ... }
+	
+	ThirdParty ::= SEQUENCE (SIZE(1..64)) OF ThirdPartyID
+	
+	ThirdPartyID ::= CHOICE {
+		logicalName IA5String (SIZE(1..1000)),
+		msisdn OCTET STRING (SIZE(8)),
+		emailaddr IA5String (SIZE(1..1000)),
+		sip-uri VisibleString (FROM("a".."z"|"A".."Z"|"0".."9"|":./-_~%#@?")) (SIZE(1..255)),
+		ims-public-identity VisibleString (FROM("a".."z"|"A".."Z"|"0".."9"|":./-_~%#@?")) (SIZE(1..255)),
+		min BIT STRING (SIZE(34)),
+		mdn OCTET STRING (SIZE(8)),
+		uri VisibleString (FROM("a".."z"|"A".."Z"|"0".."9"|"./-_~%#")) (SIZE(1..255)),
+		...
+	}
+	
+	ApplicationID ::= SEQUENCE {
+		appProvider IA5String (SIZE(1..24)),
+		appName IA5String (SIZE(1..32)),
+		appVersion IA5String (SIZE(1..8)) OPTIONAL,
+		...
+	}
+	
+	ReportingCap ::= SEQUENCE {
+		minInt INTEGER (1..3600),
+		maxInt INTEGER (1..1440) OPTIONAL,
+		repMode RepMode,
+		batchRepCap BatchRepCap OPTIONAL,
+		...
+	}
+	
+	RepMode ::= SEQUENCE {
+		realtime BOOLEAN,
+		quasirealtime BOOLEAN,
+		batch BOOLEAN,
+		...
+	}
+	
+	BatchRepCap ::= SEQUENCE {
+		report-position BOOLEAN,
+		report-measurements BOOLEAN,
+		max-num-positions INTEGER (1..1024) OPTIONAL,
+		max-num-measurements INTEGER (1..1024) OPTIONAL,
+		...
+	}
+	
+	Coordinate ::= SEQUENCE {
+		latitudeSign ENUMERATED { north(0), south(1) },
+		latitude INTEGER (0..8388607),
+		longitude INTEGER (-8388608..8388607)
+	}
+	
+	CircularArea ::= SEQUENCE {
+		coordinate Coordinate,
+		radius INTEGER (1..1000000),
+		radius-min INTEGER (1..1000000) OPTIONAL,
+		radius-max INTEGER (1..1500000) OPTIONAL
+	}
+	
+	EllipticalArea ::= SEQUENCE {
+		coordinate Coordinate,
+		semiMajor INTEGER (1..1000000),
+		semiMajor-min INTEGER (1..1000000) OPTIONAL,
+		semiMajor-max INTEGER (1..1500000) OPTIONAL,
+		semiMinor INTEGER (1..1000000),
+		semiMinor-min INTEGER (1..1000000) OPTIONAL,
+		semiMinor-max INTEGER (1..1500000) OPTIONAL,
+		angle INTEGER (0..179)
+	}
+	
+	PolygonArea ::= SEQUENCE {
+		polygonDescription PolygonDescription,
+		polygonHysteresis INTEGER (1..100000) OPTIONAL
+	}
+	
+	PolygonDescription ::= SEQUENCE (SIZE(3..15)) OF Coordinate
+	
+END
